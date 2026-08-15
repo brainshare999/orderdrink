@@ -289,7 +289,7 @@ export const DEFAULT_DRINKS: Drink[] = [
     price: 65,
     ingredients: '新鮮金桔汁、屏東九如檸檬原汁、龍眼純蜂蜜、強氣泡水',
     description: '黃金比例的金桔檸檬酸甜滋味，結合啵棒氣泡口感，解膩又消暑。',
-    imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1594053186687-7788bbcd6ea6?auto=format&fit=crop&w=800&q=80',
     isAvailable: true,
     tags: ['消暑解膩', '氣泡特調'],
     calories: 130,

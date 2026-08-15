@@ -67,7 +67,7 @@ interface BeverageContextType {
 
 const BeverageContext = createContext<BeverageContextType | undefined>(undefined);
 
-const STORAGE_KEY_DRINKS = 'siptea_drinks_v8';
+const STORAGE_KEY_DRINKS = 'siptea_drinks_v9';
 const STORAGE_KEY_CART = 'siptea_cart_v2';
 const STORAGE_KEY_ORDERS = 'siptea_orders_v2';
 
@@ -76,6 +76,7 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [drinks, setDrinks] = useState<Drink[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_DRINKS) || 
+                    localStorage.getItem('siptea_drinks_v8') || 
                     localStorage.getItem('siptea_drinks_v7') || 
                     localStorage.getItem('siptea_drinks_v6') || 
                     localStorage.getItem('siptea_drinks_v5') || 
@@ -84,8 +85,8 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (saved) {
         const parsed: Drink[] = JSON.parse(saved);
         return parsed.map((d) => {
-          if (!d.imageUrl || d.imageUrl.includes('/images/kumquat_lemon_sparkling.jpg')) {
-            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80' };
+          if (!d.imageUrl || d.imageUrl.includes('/images/kumquat_lemon_sparkling.jpg') || (d.id === 'drink-other-5' && d.imageUrl.includes('photo-1556679343-c7306c1976bc')) || (d.name.includes('金桔檸檬') && d.imageUrl.includes('photo-1556679343-c7306c1976bc'))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1594053186687-7788bbcd6ea6?auto=format&fit=crop&w=800&q=80' };
           }
           if (d.imageUrl.includes('photo-1579887829663-6f10f5421c5f')) {
             return { ...d, imageUrl: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=800&q=80' };
