@@ -67,7 +67,7 @@ interface BeverageContextType {
 
 const BeverageContext = createContext<BeverageContextType | undefined>(undefined);
 
-const STORAGE_KEY_DRINKS = 'siptea_drinks_v4';
+const STORAGE_KEY_DRINKS = 'siptea_drinks_v8';
 const STORAGE_KEY_CART = 'siptea_cart_v2';
 const STORAGE_KEY_ORDERS = 'siptea_orders_v2';
 
@@ -75,7 +75,12 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // 1. Drinks state with localStorage & self-healing image URLs
   const [drinks, setDrinks] = useState<Drink[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY_DRINKS) || localStorage.getItem('siptea_drinks_v3');
+      const saved = localStorage.getItem(STORAGE_KEY_DRINKS) || 
+                    localStorage.getItem('siptea_drinks_v7') || 
+                    localStorage.getItem('siptea_drinks_v6') || 
+                    localStorage.getItem('siptea_drinks_v5') || 
+                    localStorage.getItem('siptea_drinks_v4') || 
+                    localStorage.getItem('siptea_drinks_v3');
       if (saved) {
         const parsed: Drink[] = JSON.parse(saved);
         return parsed.map((d) => {
@@ -84,6 +89,18 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
           if (d.imageUrl.includes('photo-1579887829663-6f10f5421c5f')) {
             return { ...d, imageUrl: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=800&q=80' };
+          }
+          if (d.id === 'drink-tea-1' || (d.name.includes('四季春') && (d.imageUrl.includes('photo-1544787219-7f47ccb76574') || d.imageUrl.includes('photo-1597481499750-3e6b22637e12')))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' };
+          }
+          if (d.id === 'drink-tea-3' || (d.name.includes('茉莉') && d.imageUrl.includes('photo-1514432324607-a09d9b4aefdd'))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' };
+          }
+          if (d.id === 'drink-other-1' || (d.name.includes('香橙') && (d.imageUrl.includes('photo-1513558161293-cdaf765ed2fd') || d.imageUrl.includes('photo-1536935338788-846bb9981813')))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1525385133512-2f3bdd039054?auto=format&fit=crop&w=800&q=80' };
+          }
+          if (d.id === 'drink-other-3' || (d.name.includes('冬瓜檸檬') && d.imageUrl.includes('photo-1525385133512-2f3bdd039054'))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80' };
           }
           return d;
         });
