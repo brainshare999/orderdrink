@@ -29,6 +29,7 @@ import {
 
 const PRESET_IMAGES = [
   { label: '阿里山四季春茶 (現沖茶壺)', url: 'https://images.unsplash.com/photo-1641997827576-84d0a7e386bc?auto=format&fit=crop&w=800&q=80' },
+  { label: '炭焙文山包種烏龍 (紫砂陶壺)', url: 'https://images.unsplash.com/photo-1629440400842-9108c0ccf336?auto=format&fit=crop&w=800&q=80' },
   { label: '茉莉翡翠綠茶', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' },
   { label: '黑糖波霸鮮奶', url: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=800&q=80' },
   { label: '錫蘭厚鮮奶茶', url: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80' },

@@ -67,7 +67,7 @@ interface BeverageContextType {
 
 const BeverageContext = createContext<BeverageContextType | undefined>(undefined);
 
-const STORAGE_KEY_DRINKS = 'siptea_drinks_v10';
+const STORAGE_KEY_DRINKS = 'siptea_drinks_v11';
 const STORAGE_KEY_CART = 'siptea_cart_v2';
 const STORAGE_KEY_ORDERS = 'siptea_orders_v2';
 
@@ -76,6 +76,7 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [drinks, setDrinks] = useState<Drink[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_DRINKS) || 
+                    localStorage.getItem('siptea_drinks_v10') || 
                     localStorage.getItem('siptea_drinks_v9') || 
                     localStorage.getItem('siptea_drinks_v8') || 
                     localStorage.getItem('siptea_drinks_v7') || 
@@ -86,6 +87,9 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (saved) {
         const parsed: Drink[] = JSON.parse(saved);
         return parsed.map((d) => {
+          if (d.id === 'drink-tea-4' || ((d.name.includes('包種') || d.name.includes('炭焙')) && (d.imageUrl.includes('photo-1563822249548') || !d.imageUrl.includes('photo-1629440400842')))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1629440400842-9108c0ccf336?auto=format&fit=crop&w=800&q=80' };
+          }
           if (d.id === 'drink-tea-1' || (d.name.includes('四季春') && (d.imageUrl.includes('photo-1576092768241') || d.imageUrl.includes('photo-1544787219') || d.imageUrl.includes('photo-1597481499')))) {
             return { ...d, imageUrl: 'https://images.unsplash.com/photo-1641997827576-84d0a7e386bc?auto=format&fit=crop&w=800&q=80' };
           }

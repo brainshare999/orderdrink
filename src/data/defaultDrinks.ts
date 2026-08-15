@@ -103,7 +103,7 @@ export const DEFAULT_DRINKS: Drink[] = [
     price: 45,
     ingredients: '坪林炭焙文山包種烏龍茶葉、純淨水',
     description: '經過龍眼木炭慢火細焙，散發沉穩焙火熟果香，喉韻厚實回甘。',
-    imageUrl: 'https://images.unsplash.com/photo-1563822249548-9a72b6353cd1?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1629440400842-9108c0ccf336?auto=format&fit=crop&w=800&q=80',
     isAvailable: true,
     tags: ['深焙茶韻'],
     calories: 0,
