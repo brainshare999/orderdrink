@@ -32,10 +32,12 @@ const PRESET_IMAGES = [
   { label: '茉莉翡翠綠茶', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' },
   { label: '黑糖波霸鮮奶', url: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=800&q=80' },
   { label: '錫蘭厚鮮奶茶', url: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80' },
+  { label: '厚芝士紅玉奶蓋', url: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=800&q=80' },
   { label: '抹茶歐蕾拿鐵', url: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80' },
   { label: '冷萃黑咖啡', url: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=800&q=80' },
   { label: '義式原味拿鐵', url: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=800&q=80' },
-  { label: '金桔檸檬氣泡飲', url: '/images/kumquat_lemon_sparkling.jpg' },
+  { label: '金桔檸檬氣泡飲', url: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80' },
+  { label: '香橙翡翠鮮果茶', url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80' },
   { label: '奇異果冰沙', url: 'https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=800&q=80' },
   { label: '草莓芝芝雪酪', url: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80' }
 ];

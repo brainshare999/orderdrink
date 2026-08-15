@@ -67,17 +67,26 @@ interface BeverageContextType {
 
 const BeverageContext = createContext<BeverageContextType | undefined>(undefined);
 
-const STORAGE_KEY_DRINKS = 'siptea_drinks_v3';
+const STORAGE_KEY_DRINKS = 'siptea_drinks_v4';
 const STORAGE_KEY_CART = 'siptea_cart_v2';
 const STORAGE_KEY_ORDERS = 'siptea_orders_v2';
 
 export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. Drinks state with localStorage
+  // 1. Drinks state with localStorage & self-healing image URLs
   const [drinks, setDrinks] = useState<Drink[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY_DRINKS);
+      const saved = localStorage.getItem(STORAGE_KEY_DRINKS) || localStorage.getItem('siptea_drinks_v3');
       if (saved) {
-        return JSON.parse(saved);
+        const parsed: Drink[] = JSON.parse(saved);
+        return parsed.map((d) => {
+          if (!d.imageUrl || d.imageUrl.includes('/images/kumquat_lemon_sparkling.jpg')) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80' };
+          }
+          if (d.imageUrl.includes('photo-1579887829663-6f10f5421c5f')) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=800&q=80' };
+          }
+          return d;
+        });
       }
     } catch {
       // Fallback
