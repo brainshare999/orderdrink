@@ -1,0 +1,6 @@
+{
+  "name": "飲料訂購系統",
+  "description": "提供茶類、奶茶、咖啡與特調飲品線上點餐、客製化選項、購物車結帳與後台菜單及訂單管理系統。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
