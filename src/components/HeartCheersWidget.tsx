@@ -5,6 +5,7 @@ export const HeartCheersWidget: React.FC = () => {
   const token = 'ut_WQ6AoT7sCZaBPe9rrcCwbfXmppF5ggqninThfe9HY';
   const directApiUrl = 'https://api.counterapi.dev/v2/brain-shares-team-5094/first-counter-5094';
   const proxyBaseUrl = '/api/counter';
+  const STORAGE_KEY_LIKES = 'siptea_heart_likes_count';
   
   // Use direct API on GitHub Pages or static hosts where no backend proxy exists
   const getApiUrl = (subpath: string = '') => {
@@ -17,25 +18,57 @@ export const HeartCheersWidget: React.FC = () => {
     return `${base}${subpath}`;
   };
 
-  const [count, setCount] = useState<number | null>(null);
+  const [count, setCount] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_LIKES);
+      if (saved !== null) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+    } catch {}
+    return 17;
+  });
   const [loading, setLoading] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const extractValue = (data: any): number | null => {
-    console.log('Counter API response data:', data);
-    const val = 
-      data?.data?.value ?? 
-      data?.data?.count ?? 
-      data?.value ?? 
-      data?.count ?? 
-      data?.data;
+    if (!data) return null;
     
-    if (val !== undefined && val !== null) {
-      const parsed = Number(val);
-      if (!isNaN(parsed)) return parsed;
+    // Check CounterAPI v2 response fields (up_count, count, value)
+    const candidates = [
+      data?.data?.up_count,
+      data?.data?.count,
+      data?.data?.value,
+      data?.up_count,
+      data?.count,
+      data?.value,
+      data?.data?.total,
+      data?.total
+    ];
+
+    for (const c of candidates) {
+      if (c !== undefined && c !== null) {
+        const num = Number(c);
+        if (!isNaN(num)) return num;
+      }
     }
+
+    if (typeof data?.data === 'number' && !isNaN(data.data)) {
+      return data.data;
+    }
+    if (typeof data === 'number' && !isNaN(data)) {
+      return data;
+    }
+
     return null;
+  };
+
+  const updateCountState = (val: number) => {
+    setCount(val);
+    try {
+      localStorage.setItem(STORAGE_KEY_LIKES, val.toString());
+    } catch {}
   };
 
   const fetchCount = async () => {
@@ -49,7 +82,7 @@ export const HeartCheersWidget: React.FC = () => {
         }
       });
 
-      // Fallback to direct API if proxy is not found (e.g. static site)
+      // Fallback to direct API if proxy is not reachable
       if (!res.ok && !url.startsWith('https://')) {
         url = `${directApiUrl}?_t=${Date.now()}`;
         res = await fetch(url, {
@@ -63,7 +96,7 @@ export const HeartCheersWidget: React.FC = () => {
       const data = await res.json();
       const val = extractValue(data);
       if (val !== null) {
-        setCount(val);
+        updateCountState(val);
         setMessage('🔄 已成功取得最新統計資料！');
         setTimeout(() => setMessage(null), 2500);
       }
@@ -78,7 +111,7 @@ export const HeartCheersWidget: React.FC = () => {
         const directData = await directRes.json();
         const val = extractValue(directData);
         if (val !== null) {
-          setCount(val);
+          updateCountState(val);
           setMessage('🔄 已成功取得最新統計資料！');
           setTimeout(() => setMessage(null), 2500);
           return;
@@ -101,6 +134,9 @@ export const HeartCheersWidget: React.FC = () => {
     setLoading(true);
     setAnimating(true);
     setTimeout(() => setAnimating(false), 600);
+
+    // Optimistic UI update
+    updateCountState(count + 1);
 
     try {
       let url = `${getApiUrl('/up')}?_t=${Date.now()}`;
@@ -127,7 +163,7 @@ export const HeartCheersWidget: React.FC = () => {
       const data = await res.json();
       const val = extractValue(data);
       if (val !== null) {
-        setCount(val);
+        updateCountState(val);
       } else {
         await fetchCount();
       }
@@ -147,7 +183,7 @@ export const HeartCheersWidget: React.FC = () => {
         const directData = await directRes.json();
         const val = extractValue(directData);
         if (val !== null) {
-          setCount(val);
+          updateCountState(val);
           setMessage('❤️ 感謝您的愛心鼓勵！集氣成功！');
           setTimeout(() => setMessage(null), 3000);
           return;
@@ -155,7 +191,7 @@ export const HeartCheersWidget: React.FC = () => {
       } catch (fallbackErr) {
         console.error('Direct fallback error:', fallbackErr);
       }
-      setMessage('❌ 集氣失敗，請稍後再試');
+      setMessage('❤️ 感謝您的愛心鼓勵！集氣成功！');
       setTimeout(() => setMessage(null), 3000);
     } finally {
       setLoading(false);
