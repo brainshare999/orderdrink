@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 
 const PRESET_IMAGES = [
-  { label: '高山綠茶/青茶', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' },
+  { label: '阿里山四季春茶 (現沖茶壺)', url: 'https://images.unsplash.com/photo-1641997827576-84d0a7e386bc?auto=format&fit=crop&w=800&q=80' },
   { label: '茉莉翡翠綠茶', url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' },
   { label: '黑糖波霸鮮奶', url: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?auto=format&fit=crop&w=800&q=80' },
   { label: '錫蘭厚鮮奶茶', url: 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=800&q=80' },
@@ -36,6 +36,7 @@ const PRESET_IMAGES = [
   { label: '抹茶歐蕾拿鐵', url: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=800&q=80' },
   { label: '冷萃黑咖啡', url: 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=800&q=80' },
   { label: '義式原味拿鐵', url: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=800&q=80' },
+  { label: '蜂蜜柚子白玉氣泡飲', url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80' },
   { label: '冬瓜檸檬小紫蘇', url: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80' },
   { label: '金桔檸檬蜂蜜氣泡飲', url: 'https://images.unsplash.com/photo-1594053186687-7788bbcd6ea6?auto=format&fit=crop&w=800&q=80' },
   { label: '滿杯香橙翡翠鮮果茶', url: 'https://images.unsplash.com/photo-1525385133512-2f3bdd039054?auto=format&fit=crop&w=800&q=80' },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useBeverage } from '../context/BeverageContext';
 import { Order, OrderStatus } from '../types';
 import {
@@ -13,11 +13,15 @@ import {
   QrCode,
   LayoutDashboard,
   Sparkles,
-  Truck
+  Truck,
+  Ban,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 
 export const OrderSuccessView: React.FC = () => {
-  const { orders, activeOrder, setActiveOrder, setActiveView, updateOrderStatus } = useBeverage();
+  const { orders, activeOrder, setActiveOrder, setActiveView, updateOrderStatus, showToast } = useBeverage();
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // Current display order: either activeOrder or the latest placed order
   const order: Order | undefined =
@@ -70,8 +74,58 @@ export const OrderSuccessView: React.FC = () => {
     { title: '訂單已完成', desc: '感謝您的購買！' }
   ];
 
+  const handleConfirmCancelOrder = () => {
+    if (!order) return;
+    updateOrderStatus(order.id, 'cancelled');
+    showToast(`訂單 ${order.orderNumber} 已成功取消`);
+    setShowCancelModal(false);
+  };
+
   return (
-    <div id="order-status-view" className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div id="order-status-view" className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 relative">
+      {/* Cancel Placed Order Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-fade-in">
+          <div
+            id="cancel-placed-order-dialog"
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 animate-scale-in"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-lg font-black text-stone-900 mb-1.5">
+              確定要取消此筆訂單嗎？
+            </h3>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-6">
+              訂單編號：<strong className="text-stone-800">{order.orderNumber}</strong><br/>
+              取消後門市吧台將停止調製此筆訂單，如已線上支付款項將自動原路退回。
+            </p>
+
+            <div className="space-y-2.5">
+              <button
+                type="button"
+                id="confirm-cancel-order-action-btn"
+                onClick={handleConfirmCancelOrder}
+                className="w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>確認取消訂單</span>
+              </button>
+
+              <button
+                type="button"
+                id="dismiss-cancel-order-modal-btn"
+                onClick={() => setShowCancelModal(false)}
+                className="w-full py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-sm transition-all"
+              >
+                返回保留訂單
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top Banner Navigation */}
       <div className="flex items-center justify-between gap-4 mb-6">
         <button
@@ -82,13 +136,28 @@ export const OrderSuccessView: React.FC = () => {
           <span>返回菜單首頁</span>
         </button>
 
-        <button
-          onClick={() => setActiveView('admin')}
-          className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-100 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-xs transition-colors"
-        >
-          <LayoutDashboard className="w-4 h-4 text-amber-400" />
-          <span>後台查看訂單看板</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Cancel Order Button if not already cancelled or completed */}
+          {order.status !== 'cancelled' && order.status !== 'completed' && (
+            <button
+              type="button"
+              id="placed-order-cancel-btn"
+              onClick={() => setShowCancelModal(true)}
+              className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs transition-colors"
+            >
+              <Ban className="w-4 h-4 text-rose-600" />
+              <span>取消此訂單</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => setActiveView('admin')}
+            className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-100 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-xs transition-colors"
+          >
+            <LayoutDashboard className="w-4 h-4 text-amber-400" />
+            <span>後台查看訂單看板</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Order Status Card */}

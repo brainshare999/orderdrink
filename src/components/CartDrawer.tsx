@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useBeverage } from '../context/BeverageContext';
 import {
   X,
@@ -9,7 +9,8 @@ import {
   ArrowRight,
   Sparkles,
   CupSoda,
-  Tag
+  Tag,
+  AlertTriangle
 } from 'lucide-react';
 
 export const CartDrawer: React.FC = () => {
@@ -25,11 +26,18 @@ export const CartDrawer: React.FC = () => {
     setActiveView
   } = useBeverage();
 
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
   if (!isCartDrawerOpen) return null;
 
   const handleGoToCheckout = () => {
     setIsCartDrawerOpen(false);
     setActiveView('checkout');
+  };
+
+  const handleConfirmClear = () => {
+    clearCart();
+    setShowClearConfirm(false);
   };
 
   const deliveryThreshold = 500;
@@ -113,13 +121,46 @@ export const CartDrawer: React.FC = () => {
             </div>
           ) : (
             <>
+              {/* Clear Confirmation Prompt */}
+              {showClearConfirm && (
+                <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 mb-2 flex flex-col gap-2.5 animate-fade-in shadow-xs">
+                  <div className="flex items-start gap-2.5 text-rose-900">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-xs font-bold text-rose-950">確定要清空購物車嗎？</h4>
+                      <p className="text-[11px] text-rose-700 mt-0.5">清空後購物車內所有飲品與客製化設定將全數清除。</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 pt-1 border-t border-rose-200/60">
+                    <button
+                      type="button"
+                      onClick={() => setShowClearConfirm(false)}
+                      className="px-3 py-1 rounded-xl text-xs font-medium bg-white text-stone-700 border border-stone-200 hover:bg-stone-50 transition-colors"
+                    >
+                      保留品項
+                    </button>
+                    <button
+                      type="button"
+                      id="confirm-clear-cart-btn"
+                      onClick={handleConfirmClear}
+                      className="px-3.5 py-1 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-2xs transition-colors flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      確定清空
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-between pb-1">
                 <span className="text-xs font-bold text-stone-600">
                   購物清單明細 ({cart.length} 種品項)
                 </span>
                 <button
-                  onClick={clearCart}
-                  className="text-xs text-stone-400 hover:text-rose-600 transition-colors flex items-center gap-1"
+                  type="button"
+                  id="header-clear-cart-btn"
+                  onClick={() => setShowClearConfirm(true)}
+                  className="text-xs text-stone-500 hover:text-rose-600 transition-colors flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-200 font-medium"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   清空購物車
@@ -248,15 +289,27 @@ export const CartDrawer: React.FC = () => {
               </div>
             </div>
 
-            {/* Checkout Button */}
-            <button
-              id="cart-checkout-btn"
-              onClick={handleGoToCheckout}
-              className="w-full py-3.5 px-5 rounded-2xl bg-amber-800 hover:bg-amber-900 active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-            >
-              <span>前往結帳確認</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            {/* Actions: Clear / Cancel & Checkout */}
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <button
+                type="button"
+                id="footer-clear-cart-btn"
+                onClick={() => setShowClearConfirm(true)}
+                className="col-span-1 py-3.5 px-3 rounded-2xl border border-stone-300 hover:border-rose-300 text-stone-600 hover:text-rose-700 bg-white hover:bg-rose-50/50 active:scale-[0.98] font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 shadow-2xs"
+                title="清空購物車"
+              >
+                <Trash2 className="w-4 h-4 text-stone-400 group-hover:text-rose-500" />
+                <span>清空</span>
+              </button>
+              <button
+                id="cart-checkout-btn"
+                onClick={handleGoToCheckout}
+                className="col-span-2 py-3.5 px-4 rounded-2xl bg-amber-800 hover:bg-amber-900 active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              >
+                <span>前往結帳</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

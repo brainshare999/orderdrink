@@ -37,7 +37,7 @@ interface BeverageContextType {
   addToCart: (drink: Drink, customization?: Partial<CustomizationParams>) => void;
   updateCartItemQuantity: (cartItemId: string, delta: number) => void;
   removeFromCart: (cartItemId: string) => void;
-  clearCart: () => void;
+  clearCart: (notify?: boolean) => void;
   cartTotalCount: number;
   cartSubtotal: number;
   isCartDrawerOpen: boolean;
@@ -67,7 +67,7 @@ interface BeverageContextType {
 
 const BeverageContext = createContext<BeverageContextType | undefined>(undefined);
 
-const STORAGE_KEY_DRINKS = 'siptea_drinks_v9';
+const STORAGE_KEY_DRINKS = 'siptea_drinks_v10';
 const STORAGE_KEY_CART = 'siptea_cart_v2';
 const STORAGE_KEY_ORDERS = 'siptea_orders_v2';
 
@@ -76,6 +76,7 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [drinks, setDrinks] = useState<Drink[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_DRINKS) || 
+                    localStorage.getItem('siptea_drinks_v9') || 
                     localStorage.getItem('siptea_drinks_v8') || 
                     localStorage.getItem('siptea_drinks_v7') || 
                     localStorage.getItem('siptea_drinks_v6') || 
@@ -85,14 +86,17 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (saved) {
         const parsed: Drink[] = JSON.parse(saved);
         return parsed.map((d) => {
+          if (d.id === 'drink-tea-1' || (d.name.includes('四季春') && (d.imageUrl.includes('photo-1576092768241') || d.imageUrl.includes('photo-1544787219') || d.imageUrl.includes('photo-1597481499')))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1641997827576-84d0a7e386bc?auto=format&fit=crop&w=800&q=80' };
+          }
+          if (d.id === 'drink-other-4' || (d.name.includes('蜂蜜柚子') && (d.imageUrl.includes('photo-1556679343') || !d.imageUrl.includes('photo-1513558161293')))) {
+            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=800&q=80' };
+          }
           if (!d.imageUrl || d.imageUrl.includes('/images/kumquat_lemon_sparkling.jpg') || (d.id === 'drink-other-5' && d.imageUrl.includes('photo-1556679343-c7306c1976bc')) || (d.name.includes('金桔檸檬') && d.imageUrl.includes('photo-1556679343-c7306c1976bc'))) {
             return { ...d, imageUrl: 'https://images.unsplash.com/photo-1594053186687-7788bbcd6ea6?auto=format&fit=crop&w=800&q=80' };
           }
           if (d.imageUrl.includes('photo-1579887829663-6f10f5421c5f')) {
             return { ...d, imageUrl: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=800&q=80' };
-          }
-          if (d.id === 'drink-tea-1' || (d.name.includes('四季春') && (d.imageUrl.includes('photo-1544787219-7f47ccb76574') || d.imageUrl.includes('photo-1597481499750-3e6b22637e12')))) {
-            return { ...d, imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' };
           }
           if (d.id === 'drink-tea-3' || (d.name.includes('茉莉') && d.imageUrl.includes('photo-1514432324607-a09d9b4aefdd'))) {
             return { ...d, imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=800&q=80' };
@@ -308,8 +312,11 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showToast('已從購物車移除品項');
   };
 
-  const clearCart = () => {
+  const clearCart = (notify = true) => {
     setCart([]);
+    if (notify) {
+      showToast('已清空購物車所有品項');
+    }
   };
 
   const cartTotalCount = cart.reduce((sum, item) => sum + item.quantity, 0);

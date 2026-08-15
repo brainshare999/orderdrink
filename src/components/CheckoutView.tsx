@@ -15,7 +15,11 @@ import {
   ShieldCheck,
   ShoppingBag,
   Info,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  X,
+  Ban,
+  AlertTriangle
 } from 'lucide-react';
 
 export const CheckoutView: React.FC = () => {
@@ -25,6 +29,8 @@ export const CheckoutView: React.FC = () => {
     cartSubtotal,
     setActiveView,
     placeOrder,
+    clearCart,
+    showToast,
     setIsCartDrawerOpen
   } = useBeverage();
 
@@ -38,6 +44,7 @@ export const CheckoutView: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // Delivery calculations
   const deliveryFee = orderType === 'delivery' && cartSubtotal < 500 ? 30 : 0;
@@ -103,6 +110,19 @@ export const CheckoutView: React.FC = () => {
     }, 600);
   };
 
+  const handleCancelAndClearCart = () => {
+    clearCart(false);
+    showToast('已取消訂單結帳，並已清空購物車');
+    setShowCancelModal(false);
+    setActiveView('menu');
+  };
+
+  const handleCancelAndKeepCart = () => {
+    showToast('已取消本次結帳流程，已為您保留購物車商品');
+    setShowCancelModal(false);
+    setActiveView('menu');
+  };
+
   if (cart.length === 0) {
     return (
       <div className="max-w-xl mx-auto py-16 px-4 text-center">
@@ -122,19 +142,86 @@ export const CheckoutView: React.FC = () => {
   }
 
   return (
-    <div id="checkout-view" className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      {/* Header back button */}
-      <div className="flex items-center gap-3 mb-6">
+    <div id="checkout-view" className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 relative">
+      {/* Cancel Order Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-fade-in">
+          <div
+            id="cancel-order-dialog"
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 animate-scale-in"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-lg font-black text-stone-900 mb-1.5">
+              確定要取消此筆訂單嗎？
+            </h3>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-6">
+              您可以選擇直接清空購物車，或保留已選好的飲料品項並返回菜單繼續挑選。
+            </p>
+
+            <div className="space-y-2.5">
+              <button
+                type="button"
+                id="modal-cancel-clear-cart-btn"
+                onClick={handleCancelAndClearCart}
+                className="w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>取消結帳並清空購物車</span>
+              </button>
+
+              <button
+                type="button"
+                id="modal-cancel-keep-cart-btn"
+                onClick={handleCancelAndKeepCart}
+                className="w-full py-3 px-4 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-sm transition-all flex items-center justify-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>暫停結帳 (保留購物車內容)</span>
+              </button>
+
+              <button
+                type="button"
+                id="modal-cancel-dismiss-btn"
+                onClick={() => setShowCancelModal(false)}
+                className="w-full py-2.5 text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors"
+              >
+                繼續完成結帳
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header with back button and cancel button */}
+      <div className="flex items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            id="checkout-back-menu-btn"
+            onClick={() => setActiveView('menu')}
+            className="p-2 rounded-xl bg-white border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors flex items-center gap-1.5 text-sm font-semibold shadow-2xs"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>返回菜單</span>
+          </button>
+          <h2 className="text-2xl sm:text-3xl font-black text-stone-900">
+            訂單結帳確認
+          </h2>
+        </div>
+
+        {/* Header Cancel Order Button */}
         <button
-          onClick={() => setActiveView('menu')}
-          className="p-2 rounded-xl bg-white border border-stone-200 text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition-colors flex items-center gap-1.5 text-sm font-semibold"
+          type="button"
+          id="header-cancel-order-btn"
+          onClick={() => setShowCancelModal(true)}
+          className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200/80 text-rose-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>返回菜單</span>
+          <Ban className="w-4 h-4 text-rose-600" />
+          <span>取消訂單</span>
         </button>
-        <h2 className="text-2xl sm:text-3xl font-black text-stone-900">
-          訂單結帳確認
-        </h2>
       </div>
 
       <form onSubmit={handleCheckoutSubmit}>
@@ -476,22 +563,34 @@ export const CheckoutView: React.FC = () => {
                 <span>訂單送出後將立即傳送至門市吧台現點現做。</span>
               </div>
 
-              {/* Submit Order Button */}
-              <button
-                type="submit"
-                id="submit-order-btn"
-                disabled={isSubmitting}
-                className="mt-5 w-full py-4 px-6 rounded-2xl bg-amber-800 hover:bg-amber-900 active:scale-[0.99] text-white font-bold text-base shadow-lg shadow-amber-950/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <span>正在送出訂單中...</span>
-                ) : (
-                  <>
-                    <span>送出訂單 (NT$ {grandTotal})</span>
-                    <ArrowLeft className="w-4 h-4 rotate-180" />
-                  </>
-                )}
-              </button>
+              {/* Actions: Cancel Order & Submit Order */}
+              <div className="mt-5 space-y-2.5">
+                <button
+                  type="submit"
+                  id="submit-order-btn"
+                  disabled={isSubmitting}
+                  className="w-full py-4 px-6 rounded-2xl bg-amber-800 hover:bg-amber-900 active:scale-[0.99] text-white font-bold text-base shadow-lg shadow-amber-950/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <span>正在送出訂單中...</span>
+                  ) : (
+                    <>
+                      <span>送出訂單 (NT$ {grandTotal})</span>
+                      <ArrowLeft className="w-4 h-4 rotate-180" />
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  id="summary-cancel-order-btn"
+                  onClick={() => setShowCancelModal(true)}
+                  className="w-full py-3 px-4 rounded-2xl bg-stone-50 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 text-stone-600 hover:text-rose-700 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5"
+                >
+                  <Ban className="w-4 h-4 text-stone-400 group-hover:text-rose-600" />
+                  <span>取消此筆訂單結帳</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
