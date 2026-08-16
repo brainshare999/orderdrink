@@ -83,20 +83,20 @@ export const DrinkCustomModal: React.FC = () => {
   return (
     <div
       id="drink-custom-modal-backdrop"
-      className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
       onClick={() => setCustomizingDrink(null)}
     >
       <div
         id="drink-custom-modal"
-        className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-scale-in"
+        className="bg-white dark:bg-stone-900 rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-stone-200 dark:border-stone-800 overflow-hidden animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header & Hero */}
-        <div className="relative bg-amber-900 text-white p-5 sm:p-6 shrink-0">
+        <div className="relative bg-amber-900 dark:bg-amber-950 text-white p-5 sm:p-6 shrink-0 border-b border-amber-800 dark:border-amber-900">
           <button
             id="close-custom-modal-btn"
             onClick={() => setCustomizingDrink(null)}
-            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors"
+            className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -121,7 +121,7 @@ export const DrinkCustomModal: React.FC = () => {
                 </p>
               )}
               <div className="flex items-center gap-3 mt-2 text-xs">
-                <span className="font-bold text-amber-200 bg-amber-800/80 px-2.5 py-0.5 rounded-full border border-amber-600/40">
+                <span className="font-bold text-amber-200 bg-amber-800/80 dark:bg-amber-900/80 px-2.5 py-0.5 rounded-full border border-amber-600/40">
                   基本單價 NT$ {customizingDrink.price}
                 </span>
                 {customizingDrink.calories !== undefined && (
@@ -136,11 +136,11 @@ export const DrinkCustomModal: React.FC = () => {
         </div>
 
         {/* Modal Body / Scrollable Content */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 text-stone-800">
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 text-stone-800 dark:text-stone-200">
           {/* Ingredients Note Box */}
-          <div className="bg-amber-50/80 border border-amber-200/70 rounded-2xl p-3.5 text-xs text-stone-700">
-            <div className="flex items-center gap-1.5 font-bold text-amber-900 mb-1">
-              <Info className="w-4 h-4 text-amber-700 shrink-0" />
+          <div className="bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-900/50 rounded-2xl p-3.5 text-xs text-stone-700 dark:text-stone-300">
+            <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-300 mb-1">
+              <Info className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
               <span>成分說明與風味：</span>
             </div>
             <p className="leading-relaxed pl-5">{customizingDrink.ingredients}</p>
@@ -148,7 +148,7 @@ export const DrinkCustomModal: React.FC = () => {
 
           {/* 1. 容量尺寸 (Size) */}
           <div>
-            <label className="block text-sm font-bold text-stone-900 mb-2.5">
+            <label className="block text-sm font-bold text-stone-900 dark:text-stone-100 mb-2.5">
               1. 選擇杯型容量 <span className="text-rose-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -159,17 +159,17 @@ export const DrinkCustomModal: React.FC = () => {
                     key={opt.size}
                     type="button"
                     onClick={() => setSelectedSize(opt.size)}
-                    className={`p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between ${
+                    className={`p-3.5 rounded-2xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                       isSelected
-                        ? 'border-amber-700 bg-amber-50/80 text-amber-900 ring-2 ring-amber-700/20 font-bold'
-                        : 'border-stone-200 hover:border-stone-300 text-stone-700 bg-white'
+                        ? 'border-amber-600 dark:border-amber-500 bg-amber-50/80 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 ring-2 ring-amber-700/20 font-bold'
+                        : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-sm">{opt.size}</span>
-                      {isSelected && <Check className="w-4 h-4 text-amber-800" />}
+                      {isSelected && <Check className="w-4 h-4 text-amber-800 dark:text-amber-400" />}
                     </div>
-                    <span className="text-xs text-stone-500 mt-1 font-normal">
+                    <span className="text-xs text-stone-500 dark:text-stone-400 mt-1 font-normal">
                       {opt.priceDiff > 0 ? `+NT$ ${opt.priceDiff}` : '標準規格'}
                     </span>
                   </button>
@@ -181,12 +181,12 @@ export const DrinkCustomModal: React.FC = () => {
           {/* 2. 甜度選擇 (Sugar Level) */}
           <div>
             <div className="flex items-center justify-between mb-2.5">
-              <label className="text-sm font-bold text-stone-900">
+              <label className="text-sm font-bold text-stone-900 dark:text-stone-100">
                 2. 選擇甜度 <span className="text-rose-500">*</span>
               </label>
               {customizingDrink.recommendedSweetness && (
-                <span className="text-xs text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-600" />
+                <span className="text-xs text-amber-800 dark:text-amber-300 font-semibold bg-amber-100/70 dark:bg-amber-950/60 px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                   店家推薦：{customizingDrink.recommendedSweetness}
                 </span>
               )}
@@ -199,10 +199,10 @@ export const DrinkCustomModal: React.FC = () => {
                     key={sugar}
                     type="button"
                     onClick={() => setSelectedSugar(sugar)}
-                    className={`py-2.5 px-2 rounded-xl border text-xs text-center font-bold transition-all ${
+                    className={`py-2.5 px-2 rounded-xl border text-xs text-center font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-800 text-white border-amber-800 shadow-xs'
-                        : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
+                        ? 'bg-amber-800 dark:bg-amber-700 text-white border-amber-800 dark:border-amber-600 shadow-xs'
+                        : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700'
                     }`}
                   >
                     {sugar.split(' ')[0]}
@@ -218,12 +218,12 @@ export const DrinkCustomModal: React.FC = () => {
           {/* 3. 冰量溫度 (Ice Level) */}
           <div>
             <div className="flex items-center justify-between mb-2.5">
-              <label className="text-sm font-bold text-stone-900">
+              <label className="text-sm font-bold text-stone-900 dark:text-stone-100">
                 3. 選擇冰量 / 溫度 <span className="text-rose-500">*</span>
               </label>
               {customizingDrink.recommendedIce && (
-                <span className="text-xs text-amber-800 font-semibold bg-amber-100/70 px-2 py-0.5 rounded-md flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-600" />
+                <span className="text-xs text-amber-800 dark:text-amber-300 font-semibold bg-amber-100/70 dark:bg-amber-950/60 px-2 py-0.5 rounded-md flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                   店家推薦：{customizingDrink.recommendedIce}
                 </span>
               )}
@@ -236,10 +236,10 @@ export const DrinkCustomModal: React.FC = () => {
                     key={ice}
                     type="button"
                     onClick={() => setSelectedIce(ice)}
-                    className={`py-2 px-1.5 rounded-xl border text-xs text-center font-bold transition-all ${
+                    className={`py-2 px-1.5 rounded-xl border text-xs text-center font-bold transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-amber-800 text-white border-amber-800 shadow-xs'
-                        : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
+                        ? 'bg-amber-800 dark:bg-amber-700 text-white border-amber-800 dark:border-amber-600 shadow-xs'
+                        : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700'
                     }`}
                   >
                     {ice}
@@ -253,10 +253,10 @@ export const DrinkCustomModal: React.FC = () => {
           {customizingDrink.category !== 'coffee' && (
             <div>
               <div className="flex items-center justify-between mb-2.5">
-                <label className="text-sm font-bold text-stone-900">
+                <label className="text-sm font-bold text-stone-900 dark:text-stone-100">
                   4. 加料專區 (可多選)
                 </label>
-                <span className="text-xs text-stone-500 font-medium">已選 {selectedToppings.length} 種</span>
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">已選 {selectedToppings.length} 種</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {AVAILABLE_TOPPINGS.map((top) => {
@@ -266,25 +266,25 @@ export const DrinkCustomModal: React.FC = () => {
                       key={top.id}
                       type="button"
                       onClick={() => toggleTopping(top)}
-                      className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between ${
+                      className={`p-3 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
-                          ? 'border-amber-700 bg-amber-50/90 text-amber-950 font-bold ring-1 ring-amber-700/30'
-                          : 'border-stone-200 hover:border-stone-300 text-stone-700 bg-white'
+                          ? 'border-amber-600 dark:border-amber-500 bg-amber-50/90 dark:bg-amber-950/40 text-amber-950 dark:text-amber-200 font-bold ring-1 ring-amber-700/30'
+                          : 'border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900'
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         <div
                           className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
                             isSelected
-                              ? 'bg-amber-800 border-amber-800 text-white'
-                              : 'border-stone-300 bg-white'
+                              ? 'bg-amber-800 dark:bg-amber-600 border-amber-800 dark:border-amber-600 text-white'
+                              : 'border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800'
                           }`}
                         >
                           {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                         </div>
                         <span className="text-xs sm:text-sm">{top.name}</span>
                       </div>
-                      <span className="text-xs font-bold text-amber-800">+NT$ {top.price}</span>
+                      <span className="text-xs font-bold text-amber-800 dark:text-amber-400">+NT$ {top.price}</span>
                     </button>
                   );
                 })}
@@ -294,7 +294,7 @@ export const DrinkCustomModal: React.FC = () => {
 
           {/* 5. 客製備註 */}
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1.5">
+            <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1.5">
               5. 單品特殊需求備註 (選填)
             </label>
             <input
@@ -302,32 +302,32 @@ export const DrinkCustomModal: React.FC = () => {
               placeholder="例：自備環保杯折5元、分開裝袋、不加肉桂粉等"
               value={itemNote}
               onChange={(e) => setItemNote(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-hidden transition-all text-stone-800"
+              className="w-full px-3.5 py-2.5 text-xs bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-hidden transition-all text-stone-800 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500"
             />
           </div>
         </div>
 
         {/* Modal Footer: Quantity Stepper & Add to Cart */}
-        <div className="p-4 sm:p-5 bg-stone-50 border-t border-stone-200 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 bg-stone-50 dark:bg-stone-900/90 border-t border-stone-200 dark:border-stone-800 shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Quantity Counter */}
           <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-            <span className="text-xs font-bold text-stone-600">數量</span>
-            <div className="flex items-center bg-white border border-stone-300 rounded-2xl p-1 shadow-2xs">
+            <span className="text-xs font-bold text-stone-600 dark:text-stone-400">數量</span>
+            <div className="flex items-center bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-2xl p-1 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 disabled={quantity <= 1}
-                className="w-8 h-8 rounded-xl bg-stone-100 hover:bg-stone-200 disabled:opacity-30 disabled:hover:bg-stone-100 flex items-center justify-center text-stone-700 transition-colors"
+                className="w-8 h-8 rounded-xl bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 disabled:opacity-30 disabled:hover:bg-stone-100 flex items-center justify-center text-stone-700 dark:text-stone-200 transition-colors cursor-pointer"
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <span className="w-10 text-center font-bold text-stone-900 text-sm">
+              <span className="w-10 text-center font-bold text-stone-900 dark:text-stone-100 text-sm">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={() => setQuantity((q) => q + 1)}
-                className="w-8 h-8 rounded-xl bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-700 transition-colors"
+                className="w-8 h-8 rounded-xl bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 flex items-center justify-center text-stone-700 dark:text-stone-200 transition-colors cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -339,7 +339,7 @@ export const DrinkCustomModal: React.FC = () => {
             id="modal-add-to-cart-btn"
             type="button"
             onClick={handleAddToCart}
-            className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-amber-800 hover:bg-amber-900 active:scale-[0.98] text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all flex items-center justify-between"
+            className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 active:scale-[0.98] text-white font-bold text-sm sm:text-base shadow-md hover:shadow-lg transition-all flex items-center justify-between cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-amber-200" />

@@ -10,6 +10,7 @@ import { OrderSuccessView } from './components/OrderSuccessView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { HeartCheersWidget } from './components/HeartCheersWidget';
 import { BackToTopButton } from './components/BackToTopButton';
+import { SeasonalPromoCarousel } from './components/SeasonalPromoCarousel';
 import {
   ShoppingBag,
   Sparkles,
@@ -52,7 +53,7 @@ const MainContent: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-stone-800 selection:bg-amber-800 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#121110] text-stone-800 dark:text-stone-100 selection:bg-amber-800 selection:text-white">
       {/* Navigation Header */}
       <Navbar />
 
@@ -67,11 +68,13 @@ const MainContent: React.FC = () => {
         ) : (
           /* Default Menu View */
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-            {/* Hero Brand Greeting Banner with Static Rich Gradient */}
-            <div className="mt-6 relative rounded-3xl overflow-hidden bg-linear-to-r from-amber-900 via-stone-900 to-amber-950 text-white shadow-2xl">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.18),transparent_50%)] pointer-events-none" />
-              <div className="relative p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="max-w-xl text-center md:text-left space-y-3">
+            {/* Hero Brand Greeting Banner with Clean Static Gradient & Seasonal Promo Carousel */}
+            <div className="mt-6 relative rounded-3xl overflow-hidden bg-linear-to-r from-amber-950 via-stone-900 to-amber-950 text-white shadow-2xl border border-amber-500/20">
+              {/* Static subtle background radial ambient highlight without moving glowing orbs */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.14),transparent_55%)] pointer-events-none" />
+
+              <div className="relative z-10 p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div className="flex-1 text-center lg:text-left space-y-3">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-200 text-xs font-bold tracking-wide">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>拾茶時光・現萃原茶、職人咖啡與手工熬糖</span>
@@ -83,7 +86,7 @@ const MainContent: React.FC = () => {
                     嚴選台灣高山原片茶葉、鮮乳坊優質小農鮮乳與手工慢熬黑糖、嚴選精品咖啡豆，現點現調，呈現最純粹的天然風味。
                   </p>
 
-                  <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-amber-200">
+                  <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-amber-200">
                     <span className="flex items-center gap-1">
                       <Award className="w-4 h-4 text-amber-400" />
                       100% 台灣在地茶葉
@@ -99,27 +102,22 @@ const MainContent: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Hero Right Visual Pill */}
-                <div className="shrink-0 bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-5 text-center hidden lg:block">
-                  <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center mx-auto text-amber-300 mb-3">
-                    <CupSoda className="w-9 h-9" />
-                  </div>
-                  <span className="text-xs text-amber-200 block font-medium">線上點餐即時優惠</span>
-                  <span className="text-lg font-black text-white block mt-0.5">全品項自由客製</span>
-                  <span className="text-[11px] text-stone-300 mt-1 block">甜度 / 冰塊 / 豐富加料</span>
-                </div>
+                {/* Seasonal Limited-Time Promo Carousel Card */}
+                <SeasonalPromoCarousel />
               </div>
             </div>
 
             {/* Category Navigation Bar */}
-            <CategoryNav />
+            <div id="drink-menu-section" className="scroll-mt-20">
+              <CategoryNav />
+            </div>
 
             {/* Drink Cards Grid */}
             <div className="mt-2">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-stone-900 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
                   <span>熱門飲品清單</span>
-                  <span className="text-xs font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full">
                     {filteredDrinks.length} 款
                   </span>
                 </h3>
@@ -132,12 +130,12 @@ const MainContent: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-3xl p-12 text-center border border-stone-200/80 my-8">
-                  <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-3 text-stone-400">
+                <div className="bg-white dark:bg-stone-900 rounded-3xl p-12 text-center border border-stone-200/80 dark:border-stone-800 my-8 shadow-sm">
+                  <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-3 text-stone-400">
                     <CupSoda className="w-8 h-8" />
                   </div>
-                  <h4 className="text-base font-bold text-stone-800">查無相關飲料商品</h4>
-                  <p className="text-xs text-stone-500 mt-1">
+                  <h4 className="text-base font-bold text-stone-800 dark:text-stone-100">查無相關飲料商品</h4>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
                     請嘗試更換搜尋關鍵字或選擇其他飲料分類
                   </p>
                 </div>

@@ -17,30 +17,32 @@ async function startServer() {
   const counterBase = "https://api.counterapi.dev/v2/brain-shares-team-5094/first-counter-5094";
   const defaultCounterToken = "Bearer ut_WQ6AoT7sCZaBPe9rrcCwbfXmppF5ggqninThfe9HY";
 
-  app.all("/api/counter*", async (req, res) => {
+  // Match /api/counter and /api/counter/*
+  app.all(["/api/counter", "/api/counter/*"], async (req, res) => {
     try {
-      const authHeader = req.headers.authorization || defaultCounterToken;
-      const subPath = req.url.replace(/^\/api\/counter/, "");
+      let subPath = "";
+      if (req.params[0]) {
+        subPath = `/${req.params[0]}`;
+      } else {
+        subPath = req.path.replace(/^\/api\/counter/, "");
+      }
+
       const targetUrl = `${counterBase}${subPath}`;
 
       const fetchOptions: RequestInit = {
-        method: req.method,
+        method: req.method === "POST" || req.method === "PUT" ? req.method : "GET",
         headers: {
-          "Authorization": authHeader,
+          "Authorization": defaultCounterToken,
           "Content-Type": "application/json",
         },
       };
 
-      if (["POST", "PUT", "PATCH"].includes(req.method) && req.body && Object.keys(req.body).length > 0) {
-        fetchOptions.body = JSON.stringify(req.body);
-      }
-
       const apiRes = await fetch(targetUrl, fetchOptions);
       const data = await apiRes.json();
-      res.status(apiRes.status).json(data);
+      return res.status(apiRes.status).json(data);
     } catch (error: any) {
       console.error("Counter proxy error:", error);
-      res.status(500).json({ error: error.message || "Proxy request failed" });
+      return res.status(500).json({ error: error.message || "Proxy request failed" });
     }
   });
 

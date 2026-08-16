@@ -100,7 +100,7 @@ export const Navbar: React.FC = () => {
   return (
     <>
       {/* Top Banner */}
-      <div id="store-banner" className="bg-stone-900 text-amber-100 text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-3 overflow-x-auto no-scrollbar whitespace-nowrap">
+      <div id="store-banner" className="bg-stone-900 dark:bg-stone-950 text-amber-100 text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-3 overflow-x-auto no-scrollbar whitespace-nowrap border-b border-stone-800">
         <span className="inline-flex items-center gap-1.5 shrink-0 text-amber-300 font-mono">
           <span>{dateStr}</span>
           <span>{timeStr}</span>
@@ -126,7 +126,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Bar */}
-      <header id="main-header" className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-amber-900/10 shadow-xs">
+      <header id="main-header" className="sticky top-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-amber-900/10 dark:border-stone-800 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20 gap-4">
             {/* Brand Logo & Name */}
@@ -140,14 +140,14 @@ export const Navbar: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold tracking-tight text-stone-900 group-hover:text-amber-800 transition-colors">
+                  <h1 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
                     拾茶時光
                   </h1>
-                  <span className="text-xs font-semibold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-200/60">
+                  <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full border border-amber-200/60 dark:border-amber-900/60">
                     Sip & Tea
                   </span>
                 </div>
-                <p className="text-xs text-stone-500 font-medium">手作手搖茶飲・莊園精品咖啡</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">手作手搖茶飲・莊園精品咖啡</p>
               </div>
             </div>
 
@@ -164,12 +164,12 @@ export const Navbar: React.FC = () => {
                     setSearchQuery(e.target.value);
                     if (activeView !== 'menu') setActiveView('menu');
                   }}
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-stone-100/80 border border-stone-200/80 rounded-xl focus:bg-white focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-hidden transition-all text-stone-800 placeholder:text-stone-400"
+                  className="w-full pl-10 pr-4 py-2 text-sm bg-stone-100/80 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-hidden transition-all text-stone-800 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 font-bold px-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 font-bold px-1 cursor-pointer"
                   >
                     ✕
                   </button>
@@ -183,13 +183,13 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-menu-btn"
                 onClick={() => setActiveView('menu')}
-                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'menu'
-                    ? 'bg-amber-100 text-amber-900 shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
+                    : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
-                <Coffee className="w-4 h-4 text-amber-700" />
+                <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 <span className="hidden sm:inline">線上菜單</span>
               </button>
 
@@ -197,13 +197,13 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-tracking-btn"
                 onClick={() => setActiveView('order-status')}
-                className={`relative px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                className={`relative px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'order-status' || activeView === 'order-success'
-                    ? 'bg-amber-100 text-amber-900 shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
+                    : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
-                <Clock className="w-4 h-4 text-amber-700" />
+                <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 <span className="hidden sm:inline">訂單進度</span>
                 {activeOrdersCount > 0 && (
                   <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-amber-600 rounded-full">
@@ -216,12 +216,12 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-cart-btn"
                 onClick={() => setIsCartDrawerOpen(true)}
-                className="relative px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 hover:bg-amber-900 text-white shadow-sm hover:shadow-md transition-all flex items-center gap-2"
+                className="relative px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer"
               >
                 <div className="relative">
                   <ShoppingBag className="w-4 h-4 text-amber-200" />
                   {cartTotalCount > 0 && (
-                    <span className="absolute -top-2 -right-2.5 bg-rose-500 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white animate-scale-in">
+                    <span className="absolute -top-2 -right-2.5 bg-rose-500 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-stone-900 animate-scale-in">
                       {cartTotalCount}
                     </span>
                   )}
@@ -238,10 +238,10 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-admin-btn"
                 onClick={() => setActiveView(activeView === 'admin' ? 'menu' : 'admin')}
-                className={`p-2 sm:px-3 sm:py-2 rounded-xl text-sm font-semibold border transition-all flex items-center gap-1.5 ${
+                className={`p-2 sm:px-3 sm:py-2 rounded-xl text-sm font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'admin'
-                    ? 'bg-stone-900 border-stone-900 text-white shadow-sm'
-                    : 'border-stone-200 text-stone-700 hover:bg-stone-100 hover:text-stone-900'
+                    ? 'bg-stone-900 dark:bg-stone-800 border-stone-900 dark:border-stone-700 text-white shadow-sm'
+                    : 'border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-white'
                 }`}
                 title="店家管理後台"
               >
@@ -272,12 +272,12 @@ export const Navbar: React.FC = () => {
                   setSearchQuery(e.target.value);
                   if (activeView !== 'menu') setActiveView('menu');
                 }}
-                className="w-full pl-9 pr-4 py-2 text-sm bg-stone-100 border border-stone-200 rounded-xl focus:bg-white focus:border-amber-600 outline-hidden transition-all text-stone-800"
+                className="w-full pl-9 pr-4 py-2 text-sm bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 outline-hidden transition-all text-stone-800 dark:text-stone-100"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 font-bold"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 font-bold cursor-pointer"
                 >
                   ✕
                 </button>
@@ -291,7 +291,7 @@ export const Navbar: React.FC = () => {
       {toastMessage && (
         <div
           id="app-toast"
-          className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-5 py-3.5 rounded-2xl shadow-xl border border-stone-700/80 flex items-center gap-3 animate-slide-up"
+          className="fixed bottom-6 right-6 z-50 bg-stone-900 dark:bg-stone-800 text-white px-5 py-3.5 rounded-2xl shadow-xl border border-stone-700/80 flex items-center gap-3 animate-slide-up"
         >
           <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           <p className="text-sm font-medium">{toastMessage}</p>

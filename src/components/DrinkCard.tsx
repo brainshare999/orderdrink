@@ -33,7 +33,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
       }`}
     >
       {/* Drink Image Container */}
-      <div className="relative aspect-4/3 w-full overflow-hidden bg-stone-100">
+      <div className="relative aspect-4/3 w-full overflow-hidden bg-stone-100 dark:bg-stone-800">
         <img
           src={drink.imageUrl}
           alt={drink.name}
@@ -52,13 +52,13 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
 
         {/* Category & Status Badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-          <span className="bg-white/95 backdrop-blur-sm text-stone-800 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs">
+          <span className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm text-stone-800 dark:text-stone-200 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs border border-stone-200/50 dark:border-stone-700/50">
             {getCategoryLabel(drink.category)}
           </span>
           {drink.tags?.map((tag) => (
             <span
               key={tag}
-              className="bg-amber-800/90 backdrop-blur-sm text-amber-100 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs"
+              className="bg-amber-800/90 dark:bg-amber-700/90 backdrop-blur-sm text-amber-100 text-xs font-bold px-2.5 py-1 rounded-full shadow-xs"
             >
               {tag}
             </span>
@@ -76,7 +76,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
 
         {/* Calories Pill */}
         {drink.calories !== undefined && (
-          <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1 text-[11px] font-semibold text-white/90 bg-stone-900/60 backdrop-blur-sm px-2 py-0.5 rounded-md">
+          <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1 text-[11px] font-semibold text-white/90 bg-stone-900/70 backdrop-blur-sm px-2 py-0.5 rounded-md border border-white/10">
             <Flame className="w-3 h-3 text-amber-400" />
             <span>約 {drink.calories} kcal</span>
           </div>
@@ -88,40 +88,40 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
         <div>
           {/* Titles */}
           <div className="mb-2">
-            <h3 className="text-lg sm:text-xl font-bold text-stone-900 group-hover:text-amber-800 transition-colors">
+            <h3 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
               {drink.name}
             </h3>
             {drink.englishName && (
-              <p className="text-xs text-stone-600 font-medium tracking-tight">
+              <p className="text-xs text-stone-600 dark:text-stone-400 font-medium tracking-tight">
                 {drink.englishName}
               </p>
             )}
           </div>
 
           {/* Description */}
-          <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 mb-3 leading-relaxed">
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 line-clamp-2 mb-3 leading-relaxed">
             {drink.description}
           </p>
 
           {/* Ingredients Breakdown (成分說明) */}
-          <div className="bg-amber-50/70 border border-amber-200/60 rounded-xl p-2.5 mb-4">
-            <div className="flex items-center gap-1 text-xs font-bold text-amber-900 mb-1">
-              <Info className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+          <div className="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/50 rounded-xl p-2.5 mb-4">
+            <div className="flex items-center gap-1 text-xs font-bold text-amber-900 dark:text-amber-300 mb-1">
+              <Info className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
               <span>飲品成分：</span>
             </div>
-            <p className="text-xs text-stone-700 leading-relaxed pl-4">
+            <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed pl-4">
               {drink.ingredients}
             </p>
           </div>
         </div>
 
         {/* Price & Action Section */}
-        <div className="pt-3 border-t border-stone-100 flex items-center justify-between gap-3 mt-auto">
+        <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-3 mt-auto">
           <div>
-            <span className="text-xs text-stone-600 block font-medium">起價</span>
+            <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">起價</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-sm font-bold text-amber-800">NT$</span>
-              <span className="text-2xl font-black text-stone-900 tracking-tight">
+              <span className="text-sm font-bold text-amber-800 dark:text-amber-400">NT$</span>
+              <span className="text-2xl font-black text-stone-900 dark:text-stone-100 tracking-tight">
                 {drink.price}
               </span>
             </div>
@@ -136,7 +136,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
                   e.stopPropagation();
                   addToCart(drink);
                 }}
-                className="p-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 transition-all active:scale-95 flex items-center justify-center"
+                className="p-2.5 rounded-2xl bg-amber-100 dark:bg-amber-950/80 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 border border-amber-200/60 dark:border-amber-800/60 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
                 title="快速加入購物車 (預設規格)"
               >
                 <Plus className="w-5 h-5" />
@@ -146,7 +146,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
               <button
                 id={`customize-drink-btn-${drink.id}`}
                 onClick={() => setCustomizingDrink(drink)}
-                className="px-4 py-2.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-bold shadow-md hover:shadow-xl hover:shadow-amber-900/30 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 flex items-center gap-1.5 group cursor-pointer"
+                className="px-4 py-2.5 rounded-2xl bg-amber-800 dark:bg-amber-700 hover:bg-amber-900 dark:hover:bg-amber-600 text-white text-sm font-bold shadow-md hover:shadow-xl hover:shadow-amber-900/30 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 flex items-center gap-1.5 group cursor-pointer"
               >
                 <SlidersHorizontal className="w-4 h-4 text-amber-200 group-hover:rotate-90 transition-transform duration-300" />
                 <span>客製選購</span>
@@ -155,7 +155,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
           ) : (
             <button
               disabled
-              className="px-4 py-2.5 rounded-2xl bg-stone-200 text-stone-400 text-sm font-bold cursor-not-allowed"
+              className="px-4 py-2.5 rounded-2xl bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-600 text-sm font-bold cursor-not-allowed"
             >
               暫停供應
             </button>
