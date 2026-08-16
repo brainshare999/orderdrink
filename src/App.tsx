@@ -11,6 +11,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { HeartCheersWidget } from './components/HeartCheersWidget';
 import { BackToTopButton } from './components/BackToTopButton';
 import { SeasonalPromoCarousel } from './components/SeasonalPromoCarousel';
+import { GoogleFeedbackSection } from './components/GoogleFeedbackSection';
 import {
   ShoppingBag,
   Sparkles,
@@ -21,7 +22,8 @@ import {
   Phone,
   ShieldCheck,
   ChevronRight,
-  CupSoda
+  CupSoda,
+  MessageSquareHeart
 } from 'lucide-react';
 
 const MainContent: React.FC = () => {
@@ -68,35 +70,36 @@ const MainContent: React.FC = () => {
         ) : (
           /* Default Menu View */
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-            {/* Hero Brand Greeting Banner with Clean Static Gradient & Seasonal Promo Carousel */}
-            <div className="mt-6 relative rounded-3xl overflow-hidden bg-linear-to-r from-amber-950 via-stone-900 to-amber-950 text-white shadow-2xl border border-amber-500/20">
-              {/* Static subtle background radial ambient highlight without moving glowing orbs */}
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.14),transparent_55%)] pointer-events-none" />
+            {/* Hero Brand Greeting Banner with Warm Golden & Amber Tones & Seasonal Promo Carousel */}
+            <div className="mt-6 relative rounded-3xl overflow-hidden bg-linear-to-r from-amber-900 via-amber-950 to-stone-900 text-white shadow-2xl shadow-amber-950/20 border border-amber-400/35">
+              {/* Static subtle background radial golden ambient highlight */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.22),transparent_60%)] pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(217,119,6,0.18),transparent_50%)] pointer-events-none" />
 
               <div className="relative z-10 p-6 sm:p-8 lg:p-10 flex flex-col lg:flex-row items-center justify-between gap-8">
                 <div className="flex-1 text-center lg:text-left space-y-3">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-200 text-xs font-bold tracking-wide">
-                    <Sparkles className="w-3.5 h-3.5" />
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-200 text-xs font-bold tracking-wide">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                     <span>拾茶時光・現萃原茶、職人咖啡與手工熬糖</span>
                   </div>
-                  <h2 className="text-xl sm:text-3xl font-black tracking-tight text-white font-serif">
+                  <h2 className="text-xl sm:text-3xl font-black tracking-tight text-amber-50 font-serif">
                     {sloganText}
                   </h2>
-                  <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed whitespace-normal break-words max-w-2xl">
+                  <p className="text-xs sm:text-sm text-stone-200 font-light leading-relaxed whitespace-normal break-words max-w-2xl">
                     嚴選台灣高山原片茶葉、鮮乳坊優質小農鮮乳與手工慢熬黑糖、嚴選精品咖啡豆，現點現調，呈現最純粹的天然風味。
                   </p>
 
-                  <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-amber-200">
-                    <span className="flex items-center gap-1">
-                      <Award className="w-4 h-4 text-amber-400" />
+                  <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-amber-200 font-medium">
+                    <span className="flex items-center gap-1.5 bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                      <Award className="w-4 h-4 text-amber-300" />
                       100% 台灣在地茶葉
                     </span>
-                    <span className="flex items-center gap-1">
-                      <HeartHandshake className="w-4 h-4 text-amber-400" />
+                    <span className="flex items-center gap-1.5 bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                      <HeartHandshake className="w-4 h-4 text-amber-300" />
                       不添加人工香精茶精
                     </span>
-                    <span className="flex items-center gap-1">
-                      <ShieldCheck className="w-4 h-4 text-amber-400" />
+                    <span className="flex items-center gap-1.5 bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                      <ShieldCheck className="w-4 h-4 text-amber-300" />
                       滿 $500 即享專人免運外送
                     </span>
                   </div>
@@ -144,6 +147,9 @@ const MainContent: React.FC = () => {
 
             {/* Heart Cheers Section */}
             <HeartCheersWidget />
+
+            {/* Google Feedback Form Section */}
+            <GoogleFeedbackSection />
           </div>
         )}
       </main>
@@ -239,13 +245,22 @@ const MainContent: React.FC = () => {
                 ✓ 採用嚴選在地牧場純鮮乳，無奶精添加<br />
                 ✓ 每日新鮮熬煮黑糖波霸珍珠，絕不放隔夜
               </p>
-              <div className="pt-2">
+              <div className="pt-2 flex flex-col gap-1.5">
                 <button
                   onClick={() => setActiveView('admin')}
-                  className="text-amber-400 hover:text-amber-300 text-xs underline font-semibold"
+                  className="text-amber-400 hover:text-amber-300 text-xs underline font-semibold text-left"
                 >
                   進入店家管理後台系統 →
                 </button>
+                <a
+                  href="https://forms.gle/XM6b7b2AUb8yekiW7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-stone-300 hover:text-amber-300 text-xs flex items-center gap-1 transition-colors"
+                >
+                  <MessageSquareHeart className="w-3.5 h-3.5 text-amber-400" />
+                  <span>填寫顧客滿意度 Google 表單</span>
+                </a>
               </div>
             </div>
           </div>
