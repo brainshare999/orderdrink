@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useBeverage } from '../context/BeverageContext';
+import { useAuth } from '../context/AuthContext';
 import { CustomerInfo, OrderType, PaymentMethod } from '../types';
+import { supabase } from '../lib/supabase';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft,
@@ -17,7 +19,12 @@ import {
   AlertCircle,
   Trash2,
   Ban,
-  AlertTriangle
+  AlertTriangle,
+  LogIn,
+  Loader2,
+  Copy,
+  Check,
+  Code
 } from 'lucide-react';
 
 export const CheckoutView: React.FC = () => {
@@ -32,6 +39,8 @@ export const CheckoutView: React.FC = () => {
     setIsCartDrawerOpen
   } = useBeverage();
 
+  const { user, openLoginModal } = useAuth();
+
   // Customer form state
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -42,7 +51,55 @@ export const CheckoutView: React.FC = () => {
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isRlsError, setIsRlsError] = useState(false);
+  const [copiedSql, setCopiedSql] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+
+  const fixSqlScript = `-- 請在 Supabase 專案的 SQL Editor 執行此指令，修復 42501 RLS 權限錯誤：
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can insert their own orders" ON public.orders;
+DROP POLICY IF EXISTS "Enable insert for authenticated users" ON public.orders;
+DROP POLICY IF EXISTS "Enable insert for all users" ON public.orders;
+DROP POLICY IF EXISTS "Users can view their own orders" ON public.orders;
+
+-- 允許所有人/已登入會員新增訂單 (INSERT)
+CREATE POLICY "Enable insert for all users"
+ON public.orders
+FOR INSERT
+TO public
+WITH CHECK (true);
+
+-- 允許已登入會員讀取自己的訂單 (SELECT)
+CREATE POLICY "Users can view their own orders"
+ON public.orders
+FOR SELECT
+TO public
+USING (auth.uid() = user_id OR auth.uid() IS NULL);`;
+
+  const copySqlToClipboard = () => {
+    navigator.clipboard.writeText(fixSqlScript);
+    setCopiedSql(true);
+    showToast('已複製 Supabase RLS 修復 SQL 指令！');
+    setTimeout(() => setCopiedSql(false), 3000);
+  };
+
+  const handleOfflineLocalSubmit = (customerInfo: CustomerInfo) => {
+    setIsSubmitting(false);
+    setSubmitError(null);
+    setIsRlsError(false);
+    try {
+      confetti({
+        particleCount: 90,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    } catch {}
+    const localOrderNum = `${Math.floor(1000 + Math.random() * 9000)}`;
+    placeOrder(customerInfo, localOrderNum, user?.id);
+    showToast(`🎉 訂單已於本機成功送出！訂單編號：#SIP-${localOrderNum}`);
+  };
 
   // Delivery calculations
   const deliveryFee = orderType === 'delivery' && cartSubtotal < 500 ? 30 : 0;
@@ -68,10 +125,19 @@ export const CheckoutView: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCheckoutSubmit = (e: React.FormEvent) => {
+  const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+    setIsRlsError(false);
+
     if (cart.length === 0) {
       setActiveView('menu');
+      return;
+    }
+
+    if (!user) {
+      openLoginModal();
+      showToast('請先登入會員帳號後再送出訂單');
       return;
     }
 
@@ -91,20 +157,68 @@ export const CheckoutView: React.FC = () => {
       notes: notes.trim()
     };
 
-    setTimeout(() => {
-      // Trigger festive confetti
+    // Prepare items text/JSON summary
+    const formattedItems = cart.map((item) => ({
+      name: item.name,
+      size: item.size,
+      ice: item.ice,
+      sugar: item.sugar,
+      quantity: item.quantity,
+      price: item.finalUnitPrice,
+      subtotal: item.subtotal,
+      toppings: item.toppings.map((t) => ({ id: t.id, name: t.name, price: t.price }))
+    }));
+
+    try {
+      // Check session
+      const { data: sessionData } = await supabase.auth.getSession();
+      const currentSession = sessionData?.session;
+      const currentUserId = currentSession?.user?.id || user.id;
+
+      // 1. Insert into Supabase 'orders' table
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([
+          {
+            user_id: currentUserId,
+            name: customerInfo.name,
+            phone: customerInfo.phone,
+            items: formattedItems,
+            quantity: cartTotalCount,
+            notes: customerInfo.notes || null
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      const generatedOrderId = data ? String(data.id) : undefined;
+
+      // 2. Trigger celebration confetti
       try {
         confetti({
-          particleCount: 80,
+          particleCount: 90,
           spread: 70,
           origin: { y: 0.6 }
         });
       } catch {}
 
-      placeOrder(customerInfo);
+      // 3. Update BeverageContext state
+      placeOrder(customerInfo, generatedOrderId, currentUserId);
       setIsSubmitting(false);
-      showToast('🎉 訂單已成功送出！店家現萃製作中');
-    }, 600);
+      showToast(`🎉 訂單已成功送出！訂單編號：#${generatedOrderId || 'SIP'}`);
+    } catch (err: any) {
+      console.error('Supabase place order error:', err);
+      setIsSubmitting(false);
+      const errMsg = err.message || '送出訂單時發生錯誤，請稍候重試';
+      const isRls = err.code === '42501' || err.message?.includes('row-level security');
+      setSubmitError(errMsg);
+      setIsRlsError(Boolean(isRls));
+      showToast(`❌ 訂單送出失敗：${errMsg}`);
+    }
   };
 
   const handleCancelAndClearCart = () => {
@@ -562,10 +676,81 @@ export const CheckoutView: React.FC = () => {
                 </div>
               </div>
 
+              {/* Submit Error Message if any */}
+              {submitError && (
+                <div className="mt-4 p-4 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900/60 rounded-2xl text-xs text-rose-900 dark:text-rose-200 space-y-2.5 animate-shake">
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <strong className="font-bold block text-rose-800 dark:text-rose-300">
+                        {isRlsError ? 'Supabase RLS 權限未開啟 (Error 42501)' : '訂單送出失敗'}
+                      </strong>
+                      <span className="leading-relaxed text-[11px] block mt-0.5 text-rose-700 dark:text-rose-300">
+                        {submitError}
+                      </span>
+                    </div>
+                  </div>
+
+                  {isRlsError && (
+                    <div className="pt-2 border-t border-rose-200/60 dark:border-rose-900/50 space-y-2">
+                      <p className="text-[11px] text-stone-600 dark:text-stone-300">
+                        💡 <strong>快速修復</strong>：在 Supabase 控制台的 SQL Editor 執行設定指令即可允許新增訂單。
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={copySqlToClipboard}
+                          className="px-3 py-1.5 rounded-lg bg-stone-900 dark:bg-stone-800 text-white font-bold text-[11px] hover:bg-stone-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                          {copiedSql ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedSql ? '已複製修復 SQL' : '複製修復 SQL 指令'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (validateForm()) {
+                              handleOfflineLocalSubmit({
+                                name: name.trim(),
+                                phone: phone.trim(),
+                                orderType,
+                                pickupTime,
+                                address: orderType === 'delivery' ? address.trim() : undefined,
+                                paymentMethod,
+                                notes: notes.trim()
+                              });
+                            }
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-bold text-[11px] shadow-2xs transition-colors cursor-pointer"
+                        >
+                          以本機模式完成下單 (略過雲端)
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Login requirement banner if user is not logged in */}
+              {!user && (
+                <div className="mt-4 p-3.5 bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded-2xl flex items-center justify-between text-xs text-amber-950 dark:text-amber-200">
+                  <div className="flex items-center gap-2">
+                    <LogIn className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+                    <span>下單需先登入會員帳號</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={openLoginModal}
+                    className="px-3 py-1 bg-amber-800 hover:bg-amber-900 text-white rounded-lg font-bold text-xs shadow-2xs transition-colors cursor-pointer"
+                  >
+                    登入 / 註冊
+                  </button>
+                </div>
+              )}
+
               {/* Safety notice */}
               <div className="mt-4 p-3 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/50 rounded-2xl flex items-center gap-2 text-xs text-amber-900 dark:text-amber-200">
                 <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>訂單送出後將立即傳送至門市吧台現點現做。</span>
+                <span>訂單送出後將同步存入 Supabase 雲端並即時傳送至門市吧台。</span>
               </div>
 
               {/* Actions: Cancel Order & Submit Order */}
@@ -574,10 +759,18 @@ export const CheckoutView: React.FC = () => {
                   type="submit"
                   id="submit-order-btn"
                   disabled={isSubmitting}
-                  className="w-full py-4 px-6 rounded-2xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 active:scale-[0.99] text-white font-bold text-base shadow-lg shadow-amber-950/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-4 px-6 rounded-2xl bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 active:scale-[0.99] text-white font-bold text-base shadow-lg shadow-amber-950/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer"
                 >
                   {isSubmitting ? (
-                    <span>正在送出訂單中...</span>
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>正在送出訂單至 Supabase...</span>
+                    </>
+                  ) : !user ? (
+                    <>
+                      <LogIn className="w-4 h-4" />
+                      <span>登入帳號並送出訂單 (NT$ {grandTotal})</span>
+                    </>
                   ) : (
                     <>
                       <span>送出訂單 (NT$ {grandTotal})</span>

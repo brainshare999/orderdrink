@@ -47,7 +47,7 @@ interface BeverageContextType {
   orders: Order[];
   activeOrder: Order | null;
   setActiveOrder: (order: Order | null) => void;
-  placeOrder: (customerInfo: CustomerInfo) => Order;
+  placeOrder: (customerInfo: CustomerInfo, customOrderId?: string, userId?: string) => Order;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   deleteOrder: (orderId: string) => void;
   resetDefaultOrders: () => void;
@@ -327,7 +327,7 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const cartSubtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
   // Orders operations
-  const placeOrder = (customerInfo: CustomerInfo): Order => {
+  const placeOrder = (customerInfo: CustomerInfo, customOrderId?: string, userId?: string): Order => {
     const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
     const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
     const deliveryFee = customerInfo.orderType === 'delivery' && subtotal < 500 ? 30 : 0;
@@ -335,11 +335,12 @@ export const BeverageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const totalAmount = subtotal + deliveryFee - discount;
 
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const orderNumber = `SIP-${randomNum}`;
+    const orderNumber = customOrderId ? `SIP-${customOrderId}` : `SIP-${randomNum}`;
 
     const newOrder: Order = {
-      id: `ord-${Date.now()}`,
+      id: customOrderId ? `ord-${customOrderId}` : `ord-${Date.now()}`,
       orderNumber,
+      userId,
       createdAt: new Date().toISOString(),
       items: [...cart],
       totalQuantity,

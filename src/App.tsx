@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BeverageProvider, useBeverage } from './context/BeverageContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { CategoryNav } from './components/CategoryNav';
 import { DrinkCard } from './components/DrinkCard';
@@ -7,6 +8,7 @@ import { DrinkCustomModal } from './components/DrinkCustomModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutView } from './components/CheckoutView';
 import { OrderSuccessView } from './components/OrderSuccessView';
+import { MyOrdersView } from './components/MyOrdersView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { HeartCheersWidget } from './components/HeartCheersWidget';
 import { BackToTopButton } from './components/BackToTopButton';
@@ -65,6 +67,8 @@ const MainContent: React.FC = () => {
           <AdminDashboard />
         ) : activeView === 'checkout' ? (
           <CheckoutView />
+        ) : activeView === 'my-orders' ? (
+          <MyOrdersView />
         ) : activeView === 'order-success' || activeView === 'order-status' ? (
           <OrderSuccessView />
         ) : (
@@ -277,8 +281,10 @@ const MainContent: React.FC = () => {
 
 export default function App() {
   return (
-    <BeverageProvider>
-      <MainContent />
-    </BeverageProvider>
+    <AuthProvider>
+      <BeverageProvider>
+        <MainContent />
+      </BeverageProvider>
+    </AuthProvider>
   );
 }

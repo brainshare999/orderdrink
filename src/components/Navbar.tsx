@@ -13,12 +13,18 @@ import {
   X,
   HelpCircle,
   Mail,
-  ChevronRight
+  ChevronRight,
+  User as UserIcon,
+  LogIn,
+  LogOut,
+  PackageCheck
 } from 'lucide-react';
 import { useBeverage } from '../context/BeverageContext';
+import { useAuth } from '../context/AuthContext';
 import { FaqModal } from './FaqModal';
 import { ContactModal } from './ContactModal';
 import { ThemeToggle } from './ThemeToggle';
+import { AuthModal } from './AuthModal';
 
 export const Navbar: React.FC = () => {
   const {
@@ -32,6 +38,8 @@ export const Navbar: React.FC = () => {
     toastMessage,
     orders
   } = useBeverage();
+
+  const { user, signOut, openLoginModal } = useAuth();
 
   // Mobile menu open state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -110,7 +118,7 @@ export const Navbar: React.FC = () => {
     (o) => o.status === 'pending' || o.status === 'preparing' || o.status === 'ready'
   ).length;
 
-  const navigateTo = (view: 'menu' | 'order-status' | 'admin') => {
+  const navigateTo = (view: 'menu' | 'order-status' | 'my-orders' | 'admin') => {
     setActiveView(view);
     setIsMobileMenuOpen(false);
   };
@@ -181,19 +189,19 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Desktop Quick Search Bar */}
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
+            <div className="hidden md:flex flex-1 max-w-xs lg:max-w-sm mx-2">
               <div className="relative w-full">
                 <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="navbar-search-input"
                   type="text"
-                  placeholder="搜尋飲料名稱、茶類、咖啡或成分..."
+                  placeholder="搜尋飲料名稱、茶類..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     if (activeView !== 'menu') setActiveView('menu');
                   }}
-                  className="w-full pl-10 pr-4 py-2 text-sm bg-stone-100/80 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-hidden transition-all text-stone-800 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500"
+                  className="w-full pl-9 pr-4 py-1.5 text-xs bg-stone-100/80 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 focus:ring-2 focus:ring-amber-500/20 outline-hidden transition-all text-stone-800 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500"
                 />
                 {searchQuery && (
                   <button
@@ -207,12 +215,12 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Desktop Action Buttons (Visible >= md) */}
-            <div className="hidden md:flex items-center gap-2 lg:gap-2.5">
+            <div className="hidden md:flex items-center gap-1.5 lg:gap-2">
               {/* Menu button */}
               <button
                 id="nav-menu-btn"
                 onClick={() => navigateTo('menu')}
-                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-2.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'menu'
                     ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
                     : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
@@ -222,20 +230,40 @@ export const Navbar: React.FC = () => {
                 <span>線上菜單</span>
               </button>
 
+              {/* My Orders Button (Supabase RLS Protected) */}
+              <button
+                id="nav-my-orders-btn"
+                onClick={() => {
+                  if (user) {
+                    navigateTo('my-orders');
+                  } else {
+                    openLoginModal();
+                  }
+                }}
+                className={`relative px-2.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeView === 'my-orders'
+                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
+                    : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                <PackageCheck className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                <span>我的訂單</span>
+              </button>
+
               {/* Order Tracking button */}
               <button
                 id="nav-tracking-btn"
                 onClick={() => navigateTo('order-status')}
-                className={`relative px-3 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`relative px-2.5 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'order-status' || activeView === 'order-success'
                     ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
                     : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
                 <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                <span>訂單進度</span>
+                <span>製作進度</span>
                 {activeOrdersCount > 0 && (
-                  <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-amber-600 rounded-full">
+                  <span className="inline-flex items-center justify-center px-1.5 py-0.2 text-[10px] font-bold leading-none text-white bg-amber-600 rounded-full">
                     {activeOrdersCount}
                   </span>
                 )}
@@ -245,7 +273,7 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-cart-btn"
                 onClick={() => setIsCartDrawerOpen(true)}
-                className="relative px-3.5 py-2 rounded-xl text-sm font-bold bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                className="relative px-3 py-2 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white shadow-xs hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <div className="relative">
                   <ShoppingBag className="w-4 h-4 text-amber-200" />
@@ -269,21 +297,49 @@ export const Navbar: React.FC = () => {
               {/* Contact Us Modal */}
               <ContactModal />
 
+              {/* User Authentication Display & Logout / Login Button */}
+              {user ? (
+                <div className="flex items-center gap-1.5 pl-1 border-l border-stone-200 dark:border-stone-800">
+                  <div
+                    onClick={() => navigateTo('my-orders')}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200/60 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 max-w-[170px] truncate cursor-pointer hover:bg-amber-100/80 transition-colors"
+                    title={user.email}
+                  >
+                    <UserIcon className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
+                    <span className="font-mono text-[11px] font-bold truncate">{user.email}</span>
+                  </div>
+                  <button
+                    id="nav-logout-btn"
+                    onClick={signOut}
+                    className="p-2 rounded-xl text-stone-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                    title="登出帳號"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  id="nav-login-btn"
+                  onClick={openLoginModal}
+                  className="px-3 py-2 rounded-xl text-xs font-bold bg-amber-100 dark:bg-amber-950/70 hover:bg-amber-200 text-amber-900 dark:text-amber-200 border border-amber-300/60 dark:border-amber-900/60 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
+                  <span>登入 / 註冊</span>
+                </button>
+              )}
+
               {/* Admin Portal Toggle */}
               <button
                 id="nav-admin-btn"
                 onClick={() => navigateTo(activeView === 'admin' ? 'menu' : 'admin')}
-                className={`p-2 rounded-xl text-sm font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`p-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1 cursor-pointer ${
                   activeView === 'admin'
-                    ? 'bg-stone-900 dark:bg-stone-800 border-stone-900 dark:border-stone-700 text-white shadow-sm'
+                    ? 'bg-stone-900 dark:bg-stone-800 border-stone-900 dark:border-stone-700 text-white shadow-xs'
                     : 'border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-white'
                 }`}
                 title="店家管理後台"
               >
-                <LayoutDashboard className="w-4 h-4" />
-                <span className="hidden lg:inline">
-                  {activeView === 'admin' ? '前台' : '後台'}
-                </span>
+                <LayoutDashboard className="w-3.5 h-3.5" />
               </button>
 
               {/* Theme Toggle */}
@@ -292,6 +348,25 @@ export const Navbar: React.FC = () => {
 
             {/* Mobile Action Buttons (Visible on < md) */}
             <div className="flex md:hidden items-center gap-1.5 shrink-0">
+              {/* User login / status avatar on mobile */}
+              {user ? (
+                <button
+                  onClick={() => navigateTo('my-orders')}
+                  className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-800 flex items-center justify-center text-amber-900 dark:text-amber-200 text-xs font-bold"
+                  title={user.email}
+                >
+                  <UserIcon className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={openLoginModal}
+                  className="px-2.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center gap-1 border border-amber-300 dark:border-amber-800"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>登入</span>
+                </button>
+              )}
+
               {/* Mobile Shopping Cart Button */}
               <button
                 id="mobile-nav-cart-btn"
@@ -365,6 +440,26 @@ export const Navbar: React.FC = () => {
               id="mobile-nav-drawer"
               className="md:hidden py-3 border-t border-stone-200 dark:border-stone-800 space-y-1 animate-fade-in"
             >
+              {/* User Profile Header in Mobile Menu */}
+              {user && (
+                <div className="px-3.5 py-2.5 mb-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 truncate">
+                    <UserIcon className="w-4 h-4 text-amber-800 dark:text-amber-400 shrink-0" />
+                    <span className="font-mono text-stone-800 dark:text-stone-200 truncate">{user.email}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="text-xs text-rose-700 dark:text-rose-400 font-bold shrink-0 flex items-center gap-1 hover:underline ml-2"
+                  >
+                    <LogOut className="w-3 h-3" />
+                    登出
+                  </button>
+                </div>
+              )}
+
               {/* Menu Item: Online Menu */}
               <button
                 onClick={() => navigateTo('menu')}
@@ -377,6 +472,29 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-center gap-2.5">
                   <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                   <span>線上點餐菜單</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+
+              {/* Menu Item: My Orders (Supabase) */}
+              <button
+                onClick={() => {
+                  if (user) {
+                    navigateTo('my-orders');
+                  } else {
+                    setIsMobileMenuOpen(false);
+                    openLoginModal();
+                  }
+                }}
+                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-colors cursor-pointer ${
+                  activeView === 'my-orders'
+                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200'
+                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <PackageCheck className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                  <span>我的訂單記錄 (雲端防護)</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
               </button>
@@ -455,6 +573,9 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       </header>
+
+      {/* Global Auth Modal */}
+      <AuthModal />
 
       {/* Hidden Portal Trigger Instances for Mobile Modal Actions */}
       <ContactModal

@@ -71,6 +71,7 @@ export type OrderStatus = 'pending' | 'preparing' | 'ready' | 'completed' | 'can
 export interface Order {
   id: string;
   orderNumber: string;
+  userId?: string;
   createdAt: string;
   items: CartItem[];
   totalQuantity: number;
@@ -87,4 +88,4 @@ export interface Order {
   }[];
 }
 
-export type ActiveView = 'menu' | 'cart' | 'checkout' | 'order-success' | 'order-status' | 'admin';
+export type ActiveView = 'menu' | 'cart' | 'checkout' | 'order-success' | 'order-status' | 'my-orders' | 'admin';
