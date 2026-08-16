@@ -11,6 +11,8 @@ import {
   CupSoda
 } from 'lucide-react';
 import { useBeverage } from '../context/BeverageContext';
+import { FaqModal } from './FaqModal';
+import { ThemeToggle } from './ThemeToggle';
 
 export const Navbar: React.FC = () => {
   const {
@@ -248,6 +250,12 @@ export const Navbar: React.FC = () => {
                   {activeView === 'admin' ? '返回前台' : '管理後台'}
                 </span>
               </button>
+
+              {/* FAQ Modal (Placed on the right of navigation) */}
+              <FaqModal />
+
+              {/* Dark/Light Theme Toggle (Placed at the very right of navbar) */}
+              <ThemeToggle />
             </div>
           </div>
 

@@ -9,6 +9,7 @@ import { CheckoutView } from './components/CheckoutView';
 import { OrderSuccessView } from './components/OrderSuccessView';
 import { AdminDashboard } from './components/AdminDashboard';
 import { HeartCheersWidget } from './components/HeartCheersWidget';
+import { BackToTopButton } from './components/BackToTopButton';
 import {
   ShoppingBag,
   Sparkles,
@@ -196,6 +197,7 @@ const MainContent: React.FC = () => {
       {/* Global Modals */}
       <DrinkCustomModal />
       <CartDrawer />
+      <BackToTopButton />
 
       {/* Footer */}
       <footer className="bg-stone-900 text-stone-400 text-xs py-10 border-t border-stone-800">

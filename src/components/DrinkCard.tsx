@@ -28,7 +28,7 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
   return (
     <div
       id={`drink-card-${drink.id}`}
-      className={`group relative bg-white rounded-3xl border border-stone-200/90 shadow-xs hover:shadow-xl hover:border-amber-400/80 transition-all duration-300 flex flex-col overflow-hidden ${
+      className={`group relative bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-md hover:shadow-2xl hover:border-amber-400/80 dark:hover:border-amber-500/80 transition-all duration-300 transform hover:-translate-y-2 flex flex-col overflow-hidden ${
         !drink.isAvailable ? 'opacity-70 grayscale-[30%]' : ''
       }`}
     >
