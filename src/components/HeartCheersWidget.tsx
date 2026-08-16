@@ -28,9 +28,40 @@ export const HeartCheersWidget: React.FC = () => {
     } catch {}
     return 17;
   });
+
+  const [displayCount, setDisplayCount] = useState<number>(0);
+  const [animKey, setAnimKey] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let start = 0;
+    const end = count;
+    setDisplayCount(0);
+    if (end <= 0) {
+      setDisplayCount(0);
+      return;
+    }
+    const duration = 1200;
+    const startTime = performance.now();
+
+    const animateCount = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(easeProgress * end);
+      setDisplayCount(current);
+
+      if (progress < 1) {
+        requestAnimationFrame(animateCount);
+      } else {
+        setDisplayCount(end);
+      }
+    };
+
+    requestAnimationFrame(animateCount);
+  }, [count, animKey]);
 
   const extractValue = (data: any): number | null => {
     if (!data) return null;
@@ -73,6 +104,7 @@ export const HeartCheersWidget: React.FC = () => {
 
   const fetchCount = async () => {
     setLoading(true);
+    setDisplayCount(0);
     try {
       let url = `${getApiUrl()}?_t=${Date.now()}`;
       let res = await fetch(url, {
@@ -97,6 +129,7 @@ export const HeartCheersWidget: React.FC = () => {
       const val = extractValue(data);
       if (val !== null) {
         updateCountState(val);
+        setAnimKey(prev => prev + 1);
         setMessage('🔄 已成功取得最新統計資料！');
         setTimeout(() => setMessage(null), 2500);
       }
@@ -112,6 +145,7 @@ export const HeartCheersWidget: React.FC = () => {
         const val = extractValue(directData);
         if (val !== null) {
           updateCountState(val);
+          setAnimKey(prev => prev + 1);
           setMessage('🔄 已成功取得最新統計資料！');
           setTimeout(() => setMessage(null), 2500);
           return;
@@ -164,6 +198,7 @@ export const HeartCheersWidget: React.FC = () => {
       const val = extractValue(data);
       if (val !== null) {
         updateCountState(val);
+        setAnimKey(prev => prev + 1);
       } else {
         await fetchCount();
       }
@@ -184,6 +219,7 @@ export const HeartCheersWidget: React.FC = () => {
         const val = extractValue(directData);
         if (val !== null) {
           updateCountState(val);
+          setAnimKey(prev => prev + 1);
           setMessage('❤️ 感謝您的愛心鼓勵！集氣成功！');
           setTimeout(() => setMessage(null), 3000);
           return;
@@ -222,7 +258,7 @@ export const HeartCheersWidget: React.FC = () => {
           <div className="text-center">
             <span className="text-xs text-rose-700 font-extrabold uppercase tracking-wider block mb-1">目前總愛心集氣數</span>
             <div className={`text-4xl sm:text-5xl font-black text-rose-600 font-mono tracking-tight ${animating ? 'scale-125 text-rose-500 transition-transform duration-300' : ''}`}>
-              {count !== null ? count.toLocaleString() : (loading ? '...' : '0')}
+              {displayCount !== null ? displayCount.toLocaleString() : (loading ? '...' : '0')}
             </div>
           </div>
 

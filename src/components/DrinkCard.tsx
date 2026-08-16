@@ -146,9 +146,9 @@ export const DrinkCard: React.FC<DrinkCardProps> = ({ drink }) => {
               <button
                 id={`customize-drink-btn-${drink.id}`}
                 onClick={() => setCustomizingDrink(drink)}
-                className="px-4 py-2.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white text-sm font-bold shadow-md hover:shadow-xl hover:shadow-amber-900/30 transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-105 active:scale-95 flex items-center gap-1.5 group cursor-pointer"
               >
-                <SlidersHorizontal className="w-4 h-4 text-amber-200" />
+                <SlidersHorizontal className="w-4 h-4 text-amber-200 group-hover:rotate-90 transition-transform duration-300" />
                 <span>客製選購</span>
               </button>
             </div>

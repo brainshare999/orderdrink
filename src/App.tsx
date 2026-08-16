@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BeverageProvider, useBeverage } from './context/BeverageContext';
 import { Navbar } from './components/Navbar';
 import { CategoryNav } from './components/CategoryNav';
@@ -34,6 +34,9 @@ const MainContent: React.FC = () => {
     setIsCartDrawerOpen
   } = useBeverage();
 
+  // Static slogan
+  const sloganText = "每一杯飲品，都是對日常的溫柔犒賞。";
+
   // Filter drinks based on active category & search query
   const filteredDrinks = drinks.filter((drink) => {
     const matchesCategory =
@@ -63,9 +66,9 @@ const MainContent: React.FC = () => {
         ) : (
           /* Default Menu View */
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-            {/* Hero Brand Greeting Banner */}
-            <div className="mt-6 relative rounded-3xl overflow-hidden bg-linear-to-r from-amber-900 via-stone-900 to-amber-950 text-white shadow-xl">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.15),transparent_50%)] pointer-events-none" />
+            {/* Hero Brand Greeting Banner with Static Rich Gradient */}
+            <div className="mt-6 relative rounded-3xl overflow-hidden bg-linear-to-r from-amber-900 via-stone-900 to-amber-950 text-white shadow-2xl">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(251,191,36,0.18),transparent_50%)] pointer-events-none" />
               <div className="relative p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="max-w-xl text-center md:text-left space-y-3">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-200 text-xs font-bold tracking-wide">
@@ -73,11 +76,12 @@ const MainContent: React.FC = () => {
                     <span>拾茶時光・現萃原茶、職人咖啡與手工熬糖</span>
                   </div>
                   <h2 className="text-xl sm:text-3xl font-black tracking-tight text-white font-serif">
-                    每一杯飲品，都是對日常的溫柔犒賞。
+                    {sloganText}
                   </h2>
                   <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed whitespace-normal break-words max-w-2xl">
                     嚴選台灣高山原片茶葉、鮮乳坊優質小農鮮乳與手工慢熬黑糖、嚴選精品咖啡豆，現點現調，呈現最純粹的天然風味。
                   </p>
+
                   <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-amber-200">
                     <span className="flex items-center gap-1">
                       <Award className="w-4 h-4 text-amber-400" />

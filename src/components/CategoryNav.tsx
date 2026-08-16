@@ -45,21 +45,21 @@ export const CategoryNav: React.FC = () => {
                 setActiveCategory(cat.id);
                 if (searchQuery) setSearchQuery('');
               }}
-              className={`flex items-center gap-2.5 px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-sm sm:text-base whitespace-nowrap transition-all duration-200 shrink-0 ${
+              className={`group flex items-center gap-2.5 px-4 sm:px-6 py-3 rounded-2xl font-bold text-sm sm:text-base whitespace-nowrap transition-all duration-300 transform shrink-0 cursor-pointer ${
                 isActive
-                  ? 'bg-amber-800 text-white shadow-md shadow-amber-900/20 scale-[1.02]'
-                  : 'bg-white text-stone-700 hover:bg-amber-100/60 hover:text-amber-900 border border-stone-200/80'
+                  ? 'bg-linear-to-r from-amber-600 via-amber-700 to-orange-600 text-white shadow-xl shadow-amber-950/30 scale-105 ring-2 ring-amber-400/80 -translate-y-0.5'
+                  : 'bg-white text-stone-700 hover:bg-amber-50/90 hover:text-amber-900 border-2 border-stone-200/90 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-900/10 hover:-translate-y-0.5 active:scale-95'
               }`}
             >
-              <span className={isActive ? 'text-amber-300' : 'text-amber-700'}>
+              <span className={`transition-transform duration-300 group-hover:scale-125 ${isActive ? 'text-amber-200' : 'text-amber-600'}`}>
                 {getCategoryIcon(cat.id)}
               </span>
               <span>{cat.name}</span>
               <span
-                className={`text-xs px-2 py-0.5 rounded-full font-bold transition-colors ${
+                className={`text-xs px-2.5 py-0.5 rounded-full font-bold transition-all ${
                   isActive
-                    ? 'bg-amber-900 text-amber-200'
-                    : 'bg-stone-100 text-stone-600 group-hover:bg-amber-200'
+                    ? 'bg-amber-950/40 text-amber-100 shadow-xs'
+                    : 'bg-stone-100 text-stone-600 group-hover:bg-amber-200/80 group-hover:text-amber-950'
                 }`}
               >
                 {count}

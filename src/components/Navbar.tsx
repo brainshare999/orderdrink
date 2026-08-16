@@ -25,7 +25,32 @@ export const Navbar: React.FC = () => {
     orders
   } = useBeverage();
 
+  // Typewriter effect for free delivery banner (repeats every 30 seconds)
+  const promoText = "全館滿 $500 即享免外送費";
+  const [promoDisplayed, setPromoDisplayed] = React.useState("");
+  const [promoKey, setPromoKey] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setPromoKey(prev => prev + 1);
+    }, 30000); // 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  React.useEffect(() => {
+    let i = 0;
+    setPromoDisplayed("");
+    const timer = setInterval(() => {
+      if (i < promoText.length) {
+        setPromoDisplayed(promoText.substring(0, i + 1));
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 120);
+    return () => clearInterval(timer);
+  }, [promoKey]);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -88,7 +113,8 @@ export const Navbar: React.FC = () => {
         <span className="text-stone-500 shrink-0">|</span>
         <span className="inline-flex items-center gap-1 shrink-0">
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          全館滿 $500 即享免外送費
+          <span>{promoDisplayed}</span>
+          <span className="inline-block w-1.5 h-3 bg-amber-400 animate-pulse ml-0.5"></span>
         </span>
         <span className="text-stone-500 shrink-0">|</span>
         <span className="inline-flex items-center gap-1 shrink-0">
