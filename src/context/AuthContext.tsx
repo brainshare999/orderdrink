@@ -2,18 +2,23 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
+export type AuthMode = 'login' | 'register' | 'forgot-password' | 'update-password';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
-  authMode: 'login' | 'register';
-  setAuthMode: (mode: 'login' | 'register') => void;
+  authMode: AuthMode;
+  setAuthMode: (mode: AuthMode) => void;
   openLoginModal: () => void;
   openRegisterModal: () => void;
+  openForgotPasswordModal: () => void;
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUpWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null; user: User | null; session?: Session | null }>;
+  resetPasswordForEmail: (email: string) => Promise<{ error: AuthError | null }>;
+  updateUserPassword: (newPassword: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -24,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
 
   useEffect(() => {
     // Initial session check
@@ -34,13 +39,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     });
 
+    // Check if recovery tokens are in the URL hash
+    if (typeof window !== 'undefined' && window.location.hash.includes('type=recovery')) {
+      setAuthMode('update-password');
+      setIsAuthModalOpen(true);
+    }
+
     // Listen for auth state changes
     const {
       data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (event === 'PASSWORD_RECOVERY') {
+        setAuthMode('update-password');
+        setIsAuthModalOpen(true);
+      }
     });
 
     return () => {
@@ -55,6 +71,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const openRegisterModal = () => {
     setAuthMode('register');
+    setIsAuthModalOpen(true);
+  };
+
+  const openForgotPasswordModal = () => {
+    setAuthMode('forgot-password');
     setIsAuthModalOpen(true);
   };
 
@@ -86,6 +107,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error, user: data.user, session: data.session };
   };
 
+  const resetPasswordForEmail = async (email: string) => {
+    const redirectUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl
+    });
+    return { error };
+  };
+
+  const updateUserPassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    if (!error) {
+      // Password updated successfully
+    }
+    return { error };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -104,8 +143,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAuthMode,
         openLoginModal,
         openRegisterModal,
+        openForgotPasswordModal,
         signInWithEmail,
         signUpWithEmail,
+        resetPasswordForEmail,
+        updateUserPassword,
         signOut
       }}
     >
