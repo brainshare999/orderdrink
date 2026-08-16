@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useBeverage } from '../context/BeverageContext';
 import { FaqModal } from './FaqModal';
+import { ContactModal } from './ContactModal';
 import { ThemeToggle } from './ThemeToggle';
 
 export const Navbar: React.FC = () => {
@@ -253,6 +254,9 @@ export const Navbar: React.FC = () => {
 
               {/* FAQ Modal (Placed on the right of navigation) */}
               <FaqModal />
+
+              {/* Contact Us Modal (Placed on the right of FAQ) */}
+              <ContactModal />
 
               {/* Dark/Light Theme Toggle (Placed at the very right of navbar) */}
               <ThemeToggle />
