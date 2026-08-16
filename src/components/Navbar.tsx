@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Coffee,
   ShoppingBag,
@@ -8,7 +8,12 @@ import {
   CheckCircle2,
   Sparkles,
   PhoneCall,
-  CupSoda
+  CupSoda,
+  Menu as MenuIcon,
+  X,
+  HelpCircle,
+  Mail,
+  ChevronRight
 } from 'lucide-react';
 import { useBeverage } from '../context/BeverageContext';
 import { FaqModal } from './FaqModal';
@@ -28,20 +33,25 @@ export const Navbar: React.FC = () => {
     orders
   } = useBeverage();
 
+  // Mobile menu open state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+
   // Typewriter effect for free delivery banner (repeats every 30 seconds)
   const promoText = "全館滿 $500 即享免外送費";
-  const [promoDisplayed, setPromoDisplayed] = React.useState("");
-  const [promoKey, setPromoKey] = React.useState(0);
-  const [currentTime, setCurrentTime] = React.useState(new Date());
+  const [promoDisplayed, setPromoDisplayed] = useState("");
+  const [promoKey, setPromoKey] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  React.useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
-      setPromoKey(prev => prev + 1);
+      setPromoKey((prev) => prev + 1);
     }, 30000); // 30 seconds
     return () => clearInterval(interval);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let i = 0;
     setPromoDisplayed("");
     const timer = setInterval(() => {
@@ -55,7 +65,7 @@ export const Navbar: React.FC = () => {
     return () => clearInterval(timer);
   }, [promoKey]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -79,9 +89,11 @@ export const Navbar: React.FC = () => {
       const dayOffset = Math.round((date.getTime() - baseDate) / (1000 * 60 * 60 * 24));
       const lunarDayNum = 1 + dayOffset;
       if (lunarDayNum >= 1 && lunarDayNum <= 30) {
-        const dayNames = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
-                          '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
-                          '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
+        const dayNames = [
+          '初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+          '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+          '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'
+        ];
         const monthName = '七月';
         const idx = (lunarDayNum - 1) % 30;
         return `農曆${monthName}${dayNames[idx]}`;
@@ -98,10 +110,18 @@ export const Navbar: React.FC = () => {
     (o) => o.status === 'pending' || o.status === 'preparing' || o.status === 'ready'
   ).length;
 
+  const navigateTo = (view: 'menu' | 'order-status' | 'admin') => {
+    setActiveView(view);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <>
-      {/* Top Banner */}
-      <div id="store-banner" className="bg-stone-900 dark:bg-stone-950 text-amber-100 text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-3 overflow-x-auto no-scrollbar whitespace-nowrap border-b border-stone-800">
+      {/* Top Banner (Horizontal Scroll Safe) */}
+      <div
+        id="store-banner"
+        className="w-full max-w-full bg-stone-900 dark:bg-stone-950 text-amber-100 text-[11px] sm:text-xs py-1.5 px-3 sm:px-4 text-center font-medium flex items-center justify-start sm:justify-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar whitespace-nowrap border-b border-stone-800"
+      >
         <span className="inline-flex items-center gap-1.5 shrink-0 text-amber-300 font-mono">
           <span>{dateStr}</span>
           <span>{timeStr}</span>
@@ -120,39 +140,47 @@ export const Navbar: React.FC = () => {
           <span className="inline-block w-1.5 h-3 bg-amber-400 animate-pulse ml-0.5"></span>
         </span>
         <span className="text-stone-500 shrink-0">|</span>
-        <span className="inline-flex items-center gap-1 shrink-0">
+        <a
+          href="tel:0223456789"
+          className="inline-flex items-center gap-1 shrink-0 hover:text-amber-300 transition-colors"
+        >
           <PhoneCall className="w-3.5 h-3.5 text-amber-400" />
           門市外送專線：(02) 2345-6789
-        </span>
+        </a>
       </div>
 
       {/* Main Navigation Bar */}
-      <header id="main-header" className="sticky top-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-amber-900/10 dark:border-stone-800 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20 gap-4">
+      <header
+        id="main-header"
+        className="sticky top-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-amber-900/10 dark:border-stone-800 shadow-xs"
+      >
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4">
             {/* Brand Logo & Name */}
             <div
               id="brand-logo-btn"
-              onClick={() => setActiveView('menu')}
-              className="flex items-center gap-3 cursor-pointer group shrink-0"
+              onClick={() => navigateTo('menu')}
+              className="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0 min-w-0"
             >
-              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-amber-700 to-amber-900 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200">
-                <CupSoda className="w-7 h-7 text-amber-200" />
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-linear-to-br from-amber-700 to-amber-900 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200 shrink-0">
+                <CupSoda className="w-5 h-5 sm:w-6 sm:h-6 text-amber-200" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors">
+              <div className="truncate">
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-base sm:text-xl font-bold tracking-tight text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors whitespace-nowrap">
                     拾茶時光
                   </h1>
-                  <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full border border-amber-200/60 dark:border-amber-900/60">
+                  <span className="hidden sm:inline-flex text-[11px] font-semibold bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full border border-amber-200/60 dark:border-amber-900/60 whitespace-nowrap">
                     Sip & Tea
                   </span>
                 </div>
-                <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">手作手搖茶飲・莊園精品咖啡</p>
+                <p className="hidden md:block text-xs text-stone-500 dark:text-stone-400 font-medium truncate">
+                  手作手搖茶飲・莊園精品咖啡
+                </p>
               </div>
             </div>
 
-            {/* Quick Search Bar (Visible on menu view or desktop) */}
+            {/* Desktop Quick Search Bar */}
             <div className="hidden md:flex flex-1 max-w-md mx-4">
               <div className="relative w-full">
                 <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -178,34 +206,34 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            {/* Desktop Action Buttons (Visible >= md) */}
+            <div className="hidden md:flex items-center gap-2 lg:gap-2.5">
               {/* Menu button */}
               <button
                 id="nav-menu-btn"
-                onClick={() => setActiveView('menu')}
-                className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                onClick={() => navigateTo('menu')}
+                className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'menu'
                     ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
                     : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
                 <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                <span className="hidden sm:inline">線上菜單</span>
+                <span>線上菜單</span>
               </button>
 
               {/* Order Tracking button */}
               <button
                 id="nav-tracking-btn"
-                onClick={() => setActiveView('order-status')}
-                className={`relative px-3.5 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+                onClick={() => navigateTo('order-status')}
+                className={`relative px-3 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'order-status' || activeView === 'order-success'
                     ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 shadow-xs'
                     : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
                 <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                <span className="hidden sm:inline">訂單進度</span>
+                <span>訂單進度</span>
                 {activeOrdersCount > 0 && (
                   <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-amber-600 rounded-full">
                     {activeOrdersCount}
@@ -217,29 +245,35 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-cart-btn"
                 onClick={() => setIsCartDrawerOpen(true)}
-                className="relative px-4 py-2 rounded-xl text-sm font-bold bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                className="relative px-3.5 py-2 rounded-xl text-sm font-bold bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-600 text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <div className="relative">
                   <ShoppingBag className="w-4 h-4 text-amber-200" />
                   {cartTotalCount > 0 && (
-                    <span className="absolute -top-2 -right-2.5 bg-rose-500 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white dark:border-stone-900 animate-scale-in">
+                    <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white dark:border-stone-900 animate-scale-in">
                       {cartTotalCount}
                     </span>
                   )}
                 </div>
-                <span className="hidden sm:inline">購物車</span>
+                <span>購物車</span>
                 {cartSubtotal > 0 && (
-                  <span className="text-amber-200 font-bold ml-0.5 border-l border-amber-700/60 pl-2">
+                  <span className="text-amber-200 font-bold ml-0.5 border-l border-amber-700/60 pl-1.5">
                     ${cartSubtotal}
                   </span>
                 )}
               </button>
 
+              {/* FAQ Modal */}
+              <FaqModal />
+
+              {/* Contact Us Modal */}
+              <ContactModal />
+
               {/* Admin Portal Toggle */}
               <button
                 id="nav-admin-btn"
-                onClick={() => setActiveView(activeView === 'admin' ? 'menu' : 'admin')}
-                className={`p-2 sm:px-3 sm:py-2 rounded-xl text-sm font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
+                onClick={() => navigateTo(activeView === 'admin' ? 'menu' : 'admin')}
+                className={`p-2 rounded-xl text-sm font-semibold border transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeView === 'admin'
                     ? 'bg-stone-900 dark:bg-stone-800 border-stone-900 dark:border-stone-700 text-white shadow-sm'
                     : 'border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-white'
@@ -247,26 +281,62 @@ export const Navbar: React.FC = () => {
                 title="店家管理後台"
               >
                 <LayoutDashboard className="w-4 h-4" />
-                <span className="hidden md:inline">
-                  {activeView === 'admin' ? '返回前台' : '管理後台'}
+                <span className="hidden lg:inline">
+                  {activeView === 'admin' ? '前台' : '後台'}
                 </span>
               </button>
 
-              {/* FAQ Modal (Placed on the right of navigation) */}
-              <FaqModal />
-
-              {/* Contact Us Modal (Placed on the right of FAQ) */}
-              <ContactModal />
-
-              {/* Dark/Light Theme Toggle (Placed at the very right of navbar) */}
+              {/* Theme Toggle */}
               <ThemeToggle />
+            </div>
+
+            {/* Mobile Action Buttons (Visible on < md) */}
+            <div className="flex md:hidden items-center gap-1.5 shrink-0">
+              {/* Mobile Shopping Cart Button */}
+              <button
+                id="mobile-nav-cart-btn"
+                onClick={() => setIsCartDrawerOpen(true)}
+                className="relative px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 text-white shadow-xs flex items-center gap-1 cursor-pointer"
+                aria-label="購物車"
+              >
+                <div className="relative">
+                  <ShoppingBag className="w-4 h-4 text-amber-200" />
+                  {cartTotalCount > 0 && (
+                    <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-amber-800 dark:border-amber-700">
+                      {cartTotalCount}
+                    </span>
+                  )}
+                </div>
+                {cartSubtotal > 0 && (
+                  <span className="text-amber-200 font-bold ml-0.5 text-[11px]">
+                    ${cartSubtotal}
+                  </span>
+                )}
+              </button>
+
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
+              {/* Mobile Hamburger Toggle Button */}
+              <button
+                id="mobile-menu-toggle-btn"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                  isMobileMenuOpen
+                    ? 'bg-amber-100 dark:bg-amber-950 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200'
+                    : 'border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+                aria-label="開啟選單"
+              >
+                {isMobileMenuOpen ? <X className="w-4 h-4" /> : <MenuIcon className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
           {/* Mobile Search Bar */}
-          <div className="pb-3 md:hidden">
+          <div className="pb-2.5 md:hidden">
             <div className="relative w-full">
-              <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 id="mobile-search-input"
                 type="text"
@@ -276,20 +346,127 @@ export const Navbar: React.FC = () => {
                   setSearchQuery(e.target.value);
                   if (activeView !== 'menu') setActiveView('menu');
                 }}
-                className="w-full pl-9 pr-4 py-2 text-sm bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 outline-hidden transition-all text-stone-800 dark:text-stone-100"
+                className="w-full pl-8.5 pr-8 py-1.5 text-xs bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl focus:bg-white dark:focus:bg-stone-900 focus:border-amber-600 outline-hidden transition-all text-stone-800 dark:text-stone-100"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 font-bold cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 font-bold cursor-pointer p-0.5"
                 >
                   ✕
                 </button>
               )}
             </div>
           </div>
+
+          {/* Mobile Dropdown Navigation Menu */}
+          {isMobileMenuOpen && (
+            <div
+              id="mobile-nav-drawer"
+              className="md:hidden py-3 border-t border-stone-200 dark:border-stone-800 space-y-1 animate-fade-in"
+            >
+              {/* Menu Item: Online Menu */}
+              <button
+                onClick={() => navigateTo('menu')}
+                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-colors cursor-pointer ${
+                  activeView === 'menu'
+                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200'
+                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Coffee className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                  <span>線上點餐菜單</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+
+              {/* Menu Item: Order Tracking */}
+              <button
+                onClick={() => navigateTo('order-status')}
+                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-colors cursor-pointer ${
+                  activeView === 'order-status' || activeView === 'order-success'
+                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200'
+                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                  <span>訂單製作與外送進度</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {activeOrdersCount > 0 && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold text-white bg-amber-600 rounded-full">
+                      {activeOrdersCount} 筆進行中
+                    </span>
+                  )}
+                  <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+                </div>
+              </button>
+
+              {/* Menu Item: Contact Us Modal */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsContactModalOpen(true);
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Mail className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span>聯絡我們・顧客交辦與意見表單</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+
+              {/* Menu Item: FAQ Modal */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsFaqModalOpen(true);
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span>常見問題 Q&A</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+
+              {/* Menu Item: Admin Dashboard */}
+              <button
+                onClick={() => navigateTo(activeView === 'admin' ? 'menu' : 'admin')}
+                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-colors cursor-pointer ${
+                  activeView === 'admin'
+                    ? 'bg-stone-900 dark:bg-stone-800 text-white'
+                    : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <LayoutDashboard className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span>店家管理後台系統</span>
+                </div>
+                <span className="text-[10px] bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-300 px-2 py-0.5 rounded-md">
+                  {activeView === 'admin' ? '切換前台' : '點擊進入'}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </header>
+
+      {/* Hidden Portal Trigger Instances for Mobile Modal Actions */}
+      <ContactModal
+        isOpenExternal={isContactModalOpen}
+        onCloseExternal={() => setIsContactModalOpen(false)}
+        showDefaultTrigger={false}
+      />
+      <FaqModal
+        isOpenExternal={isFaqModalOpen}
+        onCloseExternal={() => setIsFaqModalOpen(false)}
+        showDefaultTrigger={false}
+      />
 
       {/* Floating Toast Notification */}
       {toastMessage && (

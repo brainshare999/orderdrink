@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Sparkles, CheckCircle2, RefreshCw } from 'lucide-react';
 
+const REMOTE_COUNTER_URL = 'https://api.counterapi.dev/v2/brain-shares-team-5094/first-counter-5094';
+const COUNTER_AUTH_TOKEN = 'Bearer ut_WQ6AoT7sCZaBPe9rrcCwbfXmppF5ggqninThfe9HY';
+
 export const HeartCheersWidget: React.FC = () => {
   const STORAGE_KEY_LIKES = 'siptea_heart_likes_count';
 
@@ -12,7 +15,7 @@ export const HeartCheersWidget: React.FC = () => {
         if (!isNaN(parsed) && parsed > 0) return parsed;
       }
     } catch {}
-    return 26;
+    return 33;
   });
 
   const [displayCount, setDisplayCount] = useState<number>(0);
@@ -101,33 +104,99 @@ export const HeartCheersWidget: React.FC = () => {
     } catch {}
   };
 
-  const fetchCount = async (isManualRefresh = false) => {
-    setLoading(true);
+  // Resilient fetcher supporting GitHub Pages (direct API) and local Dev proxy
+  const fetchLiveCountFromRemote = async (): Promise<number | null> => {
+    // 1. Direct fetch to CounterAPI v2 (supports CORS for GitHub Pages & browser incognito)
     try {
-      const res = await fetch(`/api/counter?_t=${Date.now()}`);
-      let targetVal = count;
+      const res = await fetch(`${REMOTE_COUNTER_URL}?_t=${Date.now()}`, {
+        headers: {
+          Authorization: COUNTER_AUTH_TOKEN,
+          Accept: 'application/json'
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         const val = extractValue(data);
-        if (val !== null) {
-          targetVal = val;
-          updateCountState(val);
+        if (val !== null) return val;
+      }
+    } catch (directErr) {
+      console.warn('Direct CounterAPI fetch failed, trying local proxy:', directErr);
+    }
+
+    // 2. Fallback to local server proxy if in custom server environment
+    try {
+      const res = await fetch(`/api/counter?_t=${Date.now()}`);
+      if (res.ok) {
+        const data = await res.json();
+        const val = extractValue(data);
+        if (val !== null) return val;
+      }
+    } catch (proxyErr) {
+      console.warn('Local proxy counter fetch failed:', proxyErr);
+    }
+
+    return null;
+  };
+
+  // Resilient incrementer supporting GitHub Pages (direct API) and local Dev proxy
+  const incrementLiveCountToRemote = async (): Promise<number | null> => {
+    // 1. Direct fetch to CounterAPI /up (supports CORS for GitHub Pages & browser incognito)
+    try {
+      const res = await fetch(`${REMOTE_COUNTER_URL}/up?_t=${Date.now()}`, {
+        method: 'GET',
+        headers: {
+          Authorization: COUNTER_AUTH_TOKEN,
+          Accept: 'application/json'
         }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const val = extractValue(data);
+        if (val !== null) return val;
+      }
+    } catch (directErr) {
+      console.warn('Direct CounterAPI /up failed, trying local proxy:', directErr);
+    }
+
+    // 2. Fallback to local server proxy
+    try {
+      const res = await fetch(`/api/counter/up?_t=${Date.now()}`);
+      if (res.ok) {
+        const data = await res.json();
+        const val = extractValue(data);
+        if (val !== null) return val;
+      }
+    } catch (proxyErr) {
+      console.warn('Local proxy counter /up failed:', proxyErr);
+    }
+
+    return null;
+  };
+
+  const fetchCount = async (isManualRefresh = false) => {
+    setLoading(true);
+    try {
+      const liveVal = await fetchLiveCountFromRemote();
+      let targetVal = count;
+
+      if (liveVal !== null) {
+        targetVal = liveVal;
+        updateCountState(liveVal);
       }
 
       if (isManualRefresh) {
         // Animate jumping count-up starting from 0 to the target count!
-        runCountUpAnimation(0, targetVal, 1200);
-        setMessage(`🔄 已重新整理計數！目前累計 ${targetVal} 顆愛心！`);
+        runCountUpAnimation(0, targetVal, 1100);
+        setMessage(`🔄 已即時同步 CounterAPI 雲端統計！目前累計 ${targetVal} 顆愛心！`);
       } else {
         // Initial load count-up
-        runCountUpAnimation(0, targetVal, 900);
+        runCountUpAnimation(0, targetVal, 850);
       }
       setTimeout(() => setMessage(null), 3000);
     } catch (err) {
-      console.warn('Fetch counter error, using cached count:', err);
+      console.warn('Fetch counter error, using fallback count:', err);
       if (isManualRefresh) {
-        runCountUpAnimation(0, count, 1200);
+        runCountUpAnimation(0, count, 1100);
         setMessage(`🔄 目前已是最新統計資料！(${count} 顆愛心)`);
         setTimeout(() => setMessage(null), 2500);
       } else {
@@ -164,21 +233,13 @@ export const HeartCheersWidget: React.FC = () => {
 
     const newOptimisticCount = count + 1;
     updateCountState(newOptimisticCount);
-    runCountUpAnimation(displayCount, newOptimisticCount, 400);
+    runCountUpAnimation(displayCount, newOptimisticCount, 350);
 
     try {
-      const res = await fetch(`/api/counter/up?_t=${Date.now()}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const val = extractValue(data);
-        if (val !== null && val !== newOptimisticCount) {
-          updateCountState(val);
-          runCountUpAnimation(newOptimisticCount, val, 400);
-        }
+      const serverVal = await incrementLiveCountToRemote();
+      if (serverVal !== null && serverVal !== newOptimisticCount) {
+        updateCountState(serverVal);
+        runCountUpAnimation(newOptimisticCount, serverVal, 350);
       }
       setMessage('❤️ 感謝您的愛心鼓勵！集氣成功！');
       setTimeout(() => setMessage(null), 3000);

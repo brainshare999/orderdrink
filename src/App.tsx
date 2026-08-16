@@ -55,7 +55,7 @@ const MainContent: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#121110] text-stone-800 dark:text-stone-100 selection:bg-amber-800 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-[#FAF7F2] dark:bg-[#121110] text-stone-800 dark:text-stone-100 selection:bg-amber-800 selection:text-white">
       {/* Navigation Header */}
       <Navbar />
 

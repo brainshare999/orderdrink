@@ -26,10 +26,27 @@ interface ContactFormData {
   feedback: string;
 }
 
-export const ContactModal: React.FC = () => {
+interface ContactModalProps {
+  isOpenExternal?: boolean;
+  onCloseExternal?: () => void;
+  showDefaultTrigger?: boolean;
+}
+
+export const ContactModal: React.FC<ContactModalProps> = ({
+  isOpenExternal,
+  onCloseExternal,
+  showDefaultTrigger = true
+}) => {
   const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xdenllnj';
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = isOpenExternal !== undefined ? isOpenExternal : internalOpen;
+  const setIsOpen = (open: boolean) => {
+    if (onCloseExternal && !open) {
+      onCloseExternal();
+    }
+    setInternalOpen(open);
+  };
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     phone: '',
@@ -153,15 +170,17 @@ export const ContactModal: React.FC = () => {
   return (
     <div className="relative">
       {/* Navbar Contact Us Button */}
-      <button
-        id="nav-contact-btn"
-        onClick={() => setIsOpen(true)}
-        className="px-3 py-2 rounded-xl text-sm font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-all flex items-center gap-1.5 border border-stone-200/80 dark:border-stone-700 cursor-pointer hover:text-amber-800 dark:hover:text-amber-300"
-        title="聯絡我們・客製交辦與意見回饋"
-      >
-        <Mail className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-        <span className="hidden sm:inline">聯絡我們</span>
-      </button>
+      {showDefaultTrigger && (
+        <button
+          id="nav-contact-btn"
+          onClick={() => setIsOpen(true)}
+          className="px-3 py-2 rounded-xl text-sm font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition-all flex items-center gap-1.5 border border-stone-200/80 dark:border-stone-700 cursor-pointer hover:text-amber-800 dark:hover:text-amber-300"
+          title="聯絡我們・客製交辦與意見回饋"
+        >
+          <Mail className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <span className="hidden sm:inline">聯絡我們</span>
+        </button>
+      )}
 
       {/* Modal Dialog rendered via Portal to ensure top-level display */}
       {isOpen &&
