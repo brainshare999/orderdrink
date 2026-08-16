@@ -3,7 +3,7 @@ import { MessageSquareHeart, ExternalLink, ChevronDown, ChevronUp, Sparkles, Che
 
 export const GoogleFeedbackSection: React.FC = () => {
   const FORM_URL = 'https://forms.gle/XM6b7b2AUb8yekiW7';
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <section
